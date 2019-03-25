@@ -17,9 +17,11 @@ argparse() {
    done
 }
 
+ARG_stationid="unknown"
+ARG_device="/dev/ttyUSB0"
+ARG_commparams="38400 cs8 -cstopb -parenb"
 ARG_server="elcheapoais.innovationgarage.tech"
 ARG_port="1024"
-ARG_stationid="unknown"
 ARG_msgspersec="100"
 ARG_msgspersecpermmsi="10"
 
@@ -31,6 +33,9 @@ Usage: install.sh OPTIONS
   Where options are any of
 
     --stationid=MMSI
+    --device=/dev/ttyUSB0
+    --commparams="38400 cs8 -cstopb -parenb"
+      This uses stty syntax
     --server=elcheapoais.innovationgarage.tech
     --port=1024
     --msgspersec=100
@@ -58,9 +63,11 @@ pip install click-datetime
 )
 
 cat > /tmp/elcheapoais-config <<EOF
+stationid="${ARG_stationid}"
+device="${ARG_device}"
+commparams="${ARG_commparams}"
 server="${ARG_server}"
 port="${ARG_port}"
-stationid="${ARG_stationid}"
 msgspersec="${ARG_msgspersec}"
 msgspersecpermmsi="${ARG_msgspersecpermmsi}"
 EOF

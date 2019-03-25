@@ -1,12 +1,12 @@
 #! /bin/bash
 
-# source /etc/elcheapoais/config
+source /etc/elcheapoais/config
 
 while : ; do
-    echo "Using device /dev/ttyUSB0..."
+    echo "Using device $device..."
 
-    stty -F /dev/ttyUSB0 38400 cs8 -cstopb -parenb
-    nc -l -k -p 1222 < /dev/ttyUSB1
+    stty -F "$device" $commparams
+    nc -l -k -p 1222 < "$device"
 
     echo "nc died, restarting..."
     sleep 1
