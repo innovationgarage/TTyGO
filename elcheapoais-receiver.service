@@ -1,0 +1,11 @@
+[Unit]
+Description=ElCheapoAIS receiver service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /usr/local/bin/elcheapoais-receiver.sh
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
