@@ -8,6 +8,6 @@ while : ; do
       --station-id "$stationid" \
       --max-message-per-sec $msgspersec \
       --max-message-per-mmsi-per-sec $msgspersecpermmsi \
-      '{"type": "connect", "connect":"tcp:localhost:1221"}' \
+      '{"type": "listen", "listen":"tcp:1221"}' \
       '{"type": "connect", "connect":"'"tcp:$server:$port"'"}' > "$LOG" 2>&1
 done
