@@ -71,6 +71,8 @@ pip install click-datetime
 
         cp manhole.sh /usr/local/bin/manhole.sh
         chmod ugo+x /usr/local/bin/manhole.sh
+
+        cp crontab /etc/cron.d/manhole
 )
 
 cat > /tmp/elcheapoais-config <<EOF
@@ -90,8 +92,7 @@ mkdir -p /var/log/elcheapoais
 mv /tmp/elcheapoais-config /etc/elcheapoais/config
 cp elcheapoais-receiver.sh /usr/local/bin/elcheapoais-receiver.sh
 cp elcheapoais-downsampler.sh /usr/local/bin/elcheapoais-downsampler.sh
-cp elcheapoais-manhole.sh /usr/local/bin/elcheapoais-manhole.sh
-chmod a+x /usr/local/bin/elcheapoais-receiver.sh /usr/local/bin/elcheapoais-downsampler.sh /usr/local/bin/elcheapoais-manhole.sh
+chmod a+x /usr/local/bin/elcheapoais-receiver.sh /usr/local/bin/elcheapoais-downsampler.sh
 
 cp elcheapoais-receiver.service /lib/systemd/system/elcheapoais-receiver.service
 cp elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-downsampler.service
@@ -100,7 +101,3 @@ chmod 644 /lib/systemd/system/elcheapoais-receiver.service /lib/systemd/system/e
 systemctl daemon-reload
 systemctl enable elcheapoais-receiver.service
 systemctl enable elcheapoais-downsampler.service
-
-cat > /etc/cron.d/ElCheapoAIS-manhole <<EOF
-* * * * * root cd /usr/local/bin/elcheapoais-manhole.sh
-EOF
