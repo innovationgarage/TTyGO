@@ -24,6 +24,7 @@ ARG_server="elcheapoais.innovationgarage.tech"
 ARG_port="1024"
 ARG_msgspersec="100"
 ARG_msgspersecpermmsi="10"
+ARG_manholeurl="http://elcheapoais.innovationgarage.tech:1026/manhole"
 
 argparse "$@"
 
@@ -40,6 +41,7 @@ Usage: install.sh OPTIONS
     --port=1024
     --msgspersec=100
     --msgspersecpermmsi=10
+    --manholeurl="http://elcheapoais.innovationgarage.tech:1026/manhole"
 EOF
     exit 1
 fi
@@ -62,6 +64,15 @@ pip install click-datetime
         python setup.py install
 )
 
+(
+        cd /tmp
+        git clone https://github.com/innovationgarage/ElCheapoAIS-manhole.git
+        cd ElCheapoAIS-manhole
+
+        cp manhole.sh /usr/local/bin/manhole.sh
+        chmod ugo+x /usr/local/bin/manhole.sh
+)
+
 cat > /tmp/elcheapoais-config <<EOF
 stationid="${ARG_stationid}"
 device="${ARG_device}"
@@ -70,20 +81,26 @@ server="${ARG_server}"
 port="${ARG_port}"
 msgspersec="${ARG_msgspersec}"
 msgspersecpermmsi="${ARG_msgspersecpermmsi}"
+manholeurl="${ARG_manholeurl}"
 EOF
 	
-sudo mkdir -p /etc/elcheapoais
-sudo mkdir -p /var/log/elcheapoais
+mkdir -p /etc/elcheapoais
+mkdir -p /var/log/elcheapoais
 
-sudo mv /tmp/elcheapoais-config /etc/elcheapoais/config
-sudo cp elcheapoais-receiver.sh /usr/local/bin/elcheapoais-receiver.sh
-sudo cp elcheapoais-downsampler.sh /usr/local/bin/elcheapoais-downsampler.sh
-chmod a+x /usr/local/bin/elcheapoais-receiver.sh /usr/local/bin/elcheapoais-downsampler.sh
+mv /tmp/elcheapoais-config /etc/elcheapoais/config
+cp elcheapoais-receiver.sh /usr/local/bin/elcheapoais-receiver.sh
+cp elcheapoais-downsampler.sh /usr/local/bin/elcheapoais-downsampler.sh
+cp elcheapoais-manhole.sh /usr/local/bin/elcheapoais-manhole.sh
+chmod a+x /usr/local/bin/elcheapoais-receiver.sh /usr/local/bin/elcheapoais-downsampler.sh /usr/local/bin/elcheapoais-manhole.sh
 
-sudo cp elcheapoais-receiver.service /lib/systemd/system/elcheapoais-receiver.service
-sudo cp elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-downsampler.service
-sudo chmod 644 /lib/systemd/system/elcheapoais-receiver.service /lib/systemd/system/elcheapoais-downsampler.service
+cp elcheapoais-receiver.service /lib/systemd/system/elcheapoais-receiver.service
+cp elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-downsampler.service
+chmod 644 /lib/systemd/system/elcheapoais-receiver.service /lib/systemd/system/elcheapoais-downsampler.service
 
-sudo systemctl daemon-reload
-sudo systemctl enable elcheapoais-receiver.service
-sudo systemctl enable elcheapoais-downsampler.service
+systemctl daemon-reload
+systemctl enable elcheapoais-receiver.service
+systemctl enable elcheapoais-downsampler.service
+
+cat > /etc/cron.d/ElCheapoAIS-manhole <<EOF
+* * * * * root cd /usr/local/bin/elcheapoais-manhole.sh
+EOF
