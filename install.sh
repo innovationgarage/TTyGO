@@ -98,6 +98,18 @@ cp elcheapoais-receiver.service /lib/systemd/system/elcheapoais-receiver.service
 cp elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-downsampler.service
 chmod 644 /lib/systemd/system/elcheapoais-receiver.service /lib/systemd/system/elcheapoais-downsampler.service
 
+# Some generic system config
+# - autologin on serial console
+# - Forbid password login over ssh
+mkdir -p /etc/systemd/system/serial-getty@.service.d
+cat > /etc/systemd/system/serial-getty@.service.d/20-autologin.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM
+EOF
+
+sed -i -e "s+#\? *PasswordAuthentication *yes+PasswordAuthentication no+g" /etc/ssh/sshd_config
+
 systemctl daemon-reload
 systemctl enable elcheapoais-receiver.service
 systemctl enable elcheapoais-downsampler.service
