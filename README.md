@@ -16,15 +16,21 @@ to land using your regular (satellite) internet connection.
 * AIS downsampling
   * Lowest of a total of 100 messages / sec or 10 messages / sec / mmsi.
 
-# Connecting a PC for configuration
+# First time configuration
 
-Connect the USB normally used to power the device to a PC. Open a
-terminal program like PuTTY or Minicom and instruct it to connect to
+1) Connect the USB to a PC (the USB normally used to power the device)
+
+2) Wait until the serial port appears. In Windows you can see it in the Device Manager:
+![image](images/device_manager.PNG)
+
+3) Open a terminal program like PuTTY or Minicom and instruct it to connect to
 the USB serial port the device presents as (/dev/ttyACM? under linux,
-COM?: under windows). It may take up to a minute for the device to
-show up.
+COM?: under windows). 
 
-You should be presented with a Linux command prompt, e.g. something lik
+In PuTTY the configuration for the early screenshot would look like:
+![image](images/putty.PNG)
+
+You should be presented with a Linux command prompt, e.g. something like
 
     root@orangepizero:~# 
 
