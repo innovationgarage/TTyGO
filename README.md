@@ -1,3 +1,13 @@
+# About
+
+ElCheapoAIS-nmea is a relay for AIS messages, sending received AIS messages, including your own position, speed etc
+to land using your regular (satellite) internet connection.
+
+# Hardware installation
+
+* Connect the A, B and GND screw headers to an NMEA 0183 output on your AIS or NMEA hub
+* Connect the USB cable to a USB charger
+
 # Default configuration
 
 * NMEA bus
