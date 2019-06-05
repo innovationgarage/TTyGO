@@ -10,7 +10,7 @@ to land using your regular (satellite) internet connection.
 
 # Firewall configuration
 
-You need to open outgoing tcp traffic to the ports 1026 and 1024 to elcheapoais.innovationgarage.tech.
+You need to open outgoing tcp traffic to the ports 1026 and 1024 to elcheapoais.innovationgarage.tech (93.188.234.96).
 
 # Default configuration
 
