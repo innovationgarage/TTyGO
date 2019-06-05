@@ -8,6 +8,10 @@ to land using your regular (satellite) internet connection.
 * Connect the A, B and GND screw headers to an NMEA 0183 output on your AIS or NMEA hub
 * Connect the USB cable to a USB charger
 
+# Firewall configuration
+
+You need to open outgoing tcp traffic to the ports 1026 and 1024 to elcheapoais.innovationgarage.tech.
+
 # Default configuration
 
 * NMEA bus
