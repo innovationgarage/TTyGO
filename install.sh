@@ -64,21 +64,24 @@ fi
 mkdir -p /etc/elcheapoais
 mkdir -p /var/log/elcheapoais
 mkdir -p /usr/local/bin
+mkdir -p /lib/elcheapoais
+mkfifo /lib/elcheapoais/notifier
 
 # Somehow, setuptools fails to install this dependency of the downsampler
 python3 -m pip install click-datetime
 
 # downsampler
 (
+        echo "Installing downsampler..."
         cd /tmp
         git clone https://github.com/innovationgarage/ElCheapoAIS-downsampler.git
         cd ElCheapoAIS-downsampler
 
-        echo Installing...
         python3 setup.py install
 )
 
 (
+	echo "Installing manhole..."
         cd /tmp
         git clone https://github.com/innovationgarage/ElCheapoAIS-manhole.git
         cd ElCheapoAIS-manhole
@@ -100,6 +103,16 @@ EOF
         fi
 )
 
+(
+        echo "Installing notifier..."
+
+	cd /tmp
+	git clone https://github.com/innovationgarage/ElCheapoAIS-notifier.git
+	cd ElCheapoAIS-notifier
+	python3 setup.py install
+)
+
+
 cat > /tmp/elcheapoais-config <<EOF
 stationid="${ARG_stationid}"
 device="${ARG_device}"
@@ -114,16 +127,21 @@ EOF
 mv /tmp/elcheapoais-config /etc/elcheapoais/config
 cp elcheapoais-receiver.sh /usr/local/bin/elcheapoais-receiver.sh
 cp elcheapoais-downsampler.sh /usr/local/bin/elcheapoais-downsampler.sh
+cp elcheapoais-notifier.sh /usr/local/bin/elcheapoais-notifier.sh
 chmod a+x /usr/local/bin/elcheapoais-receiver.sh /usr/local/bin/elcheapoais-downsampler.sh
+cp notifier.json /etc/elcheapoais/notifier.json
+
 
 if [ -e /lib/systemd ]; then
   cp elcheapoais-receiver.service /lib/systemd/system/elcheapoais-receiver.service
   cp elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-downsampler.service
-  chmod 644 /lib/systemd/system/elcheapoais-receiver.service /lib/systemd/system/elcheapoais-downsampler.service
+  cp elcheapoais-notifier.service /lib/systemd/system/elcheapoais-notifier.service
+  chmod 644 /lib/systemd/system/elcheapoais-receiver.service /lib/systemd/system/elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-notifier.service
 else
   if [ -e /etc/rc.d ]; then
      cp elcheapoais-receiver.procd /etc/init.d/elcheapoais-receiver
      cp elcheapoais-downsampler.procd /etc/init.d/elcheapoais-downsampler
+     cp elcheapoais-notifier.procd /etc/init.d/elcheapoais-notifier
   else
     echo "Unknown platform"
     exit 1
@@ -148,10 +166,12 @@ if which systemctl > /dev/null; then
   systemctl daemon-reload
   systemctl enable elcheapoais-receiver.service
   systemctl enable elcheapoais-downsampler.service
+  systemctl enable elcheapoais-notifier.service
 else
   if which service > /dev/null; then
     service elcheapoais-receiver enable
     service elcheapoais-downsampler enable
+    service elcheapoais-notifier enable
     service cron enable
   fi
 fi

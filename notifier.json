@@ -1,0 +1,16 @@
+{
+    "source": "/lib/elcheapoais/notifier",
+    
+    "destinations": {"green": "/sys/class/leds/orangepi:green:pwr/brightness",
+                     "red": "/sys/class/leds/orangepi:red:status/brightness"},
+
+    "mappings": [{"in": {"nmea": 1, "manhole": 1, "geocloud": 1}, "out": {"red": [0, 0], "green": [0, 0]}},
+                 {"in": {"nmea": 1, "manhole": 1, "geocloud": 0}, "out": {"red": [0, 0.5],   "green": [0, 0]}},
+                 {"in": {"nmea": 1, "manhole": 0, "geocloud": 1}, "out": {"red": [2, 0],   "green": [0, 0]}},
+                 {"in": {"nmea": 1, "manhole": 0, "geocloud": 0}, "out": {"red": [10, 0],  "green": [0, 0]}},
+                 {"in": {"nmea": 0, "manhole": 1, "geocloud": 1}, "out": {"red": [0, 0], "green": [10, 0.5]}},
+                 {"in": {"nmea": 0, "manhole": 1, "geocloud": 0}, "out": {"red": [0, 0.5],   "green": [10, 0.5]}},
+                 {"in": {"nmea": 0, "manhole": 0, "geocloud": 1}, "out": {"red": [2, 0],   "green": [10, 0.5]}},
+                 {"in": {"nmea": 0, "manhole": 0, "geocloud": 0}, "out": {"red": [10, 0],  "green": [10, 0.5]}}]
+}
+
