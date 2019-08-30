@@ -168,10 +168,10 @@ if which systemctl > /dev/null; then
   systemctl enable elcheapoais-downsampler.service
   systemctl enable elcheapoais-notifier.service
 else
-  if which service > /dev/null; then
-    service elcheapoais-receiver enable
-    service elcheapoais-downsampler enable
-    service elcheapoais-notifier enable
-    service cron enable
+  if [ -e /etc/rc.d ]; then
+    /etc/init.d/elcheapoais-receiver enable
+    /etc/init.d/elcheapoais-downsampler enable
+    /etc/init.d/elcheapoais-notifier enable
+    /etc/init.d/cron enable
   fi
 fi
