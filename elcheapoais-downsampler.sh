@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export PYTHONUNBUFFERED=True
+
 source /etc/elcheapoais/config
 mkdir -p /var/log/elcheapoais
 

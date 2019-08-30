@@ -1,5 +1,7 @@
 #! /bin/sh
 
+export PYTHONUNBUFFERED=True
+
 mkdir -p /var/log/elcheapoais
 
 while : ; do
