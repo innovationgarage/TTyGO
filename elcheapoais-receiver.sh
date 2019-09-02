@@ -2,6 +2,26 @@
 
 source /etc/elcheapoais/config
 
+if [ "$station_id" == "unknonw" ]; then
+    echo "Finding station id using device $device..."
+
+    stty -F "$device" $commparams
+    
+    mmsi="$(grep "AIVDO" "$device" |
+              aisdecode 2> /dev/null |
+              grep mmsi |
+              head -n 1 |
+              sed -e 's+.*mmsi": \([0-9]*\),.*+\1+g')"
+
+    if cat /proc/mounts | grep "overlayroot / " > /dev/null; then
+        overlayroot-chroot sed -i -e "s+stationid=.*+stationid=\"$mmsi\"+g" /etc/elcheapoais/config
+    else
+        sed -i -e "s+stationid=.*+stationid=\"$mmsi\"+g" /etc/elcheapoais/config
+    fi
+    
+    reboot now
+fi
+
 while : ; do
     echo "Using device $device..."
 
