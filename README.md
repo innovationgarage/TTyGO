@@ -68,6 +68,13 @@ entirety:
     cat > /etc/elcheapoais/config <<EOF
     Copy-paste in modified file contents here
     EOF
+    
+## Station ID autodetection
+
+If the station ID is set to "unknown", the device will not start normal operation, but will instead listen for AIVDO messages
+from the AIS, extracting the MMSI from the first one received, set that as station id and reboot.
+
+This is the factory default setting for stationid.
 
 # Applying new config
 
