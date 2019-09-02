@@ -49,22 +49,39 @@ fi
 
 # General dependencies
 echo Installing dependencies
-apt install -y python python-pip python-dev python-setuptools
+
+if which apt > /dev/null; then
+    apt install -y python3 python3-pip python3-setuptools python3-dev git gcc openssh-server openssh-client bash
+else
+  if which opkg > /dev/null; then
+    opkg install python3 python3-pip python3-setuptools python3-dev git-http gcc openssh-server openssh-client bash
+  else
+    echo "Unknown platform"
+    exit 1
+  fi
+fi
+
+mkdir -p /etc/elcheapoais
+mkdir -p /var/log/elcheapoais
+mkdir -p /usr/local/bin
+mkdir -p /lib/elcheapoais
+mkfifo /lib/elcheapoais/notifier
 
 # Somehow, setuptools fails to install this dependency of the downsampler
-pip install click-datetime
+python3 -m pip install click-datetime
 
 # downsampler
 (
+        echo "Installing downsampler..."
         cd /tmp
         git clone https://github.com/innovationgarage/ElCheapoAIS-downsampler.git
         cd ElCheapoAIS-downsampler
 
-        echo Installing...
-        python setup.py install
+        python3 setup.py install
 )
 
 (
+	echo "Installing manhole..."
         cd /tmp
         git clone https://github.com/innovationgarage/ElCheapoAIS-manhole.git
         cd ElCheapoAIS-manhole
@@ -72,8 +89,29 @@ pip install click-datetime
         cp manhole.sh /usr/local/bin/manhole.sh
         chmod ugo+x /usr/local/bin/manhole.sh
 
-        cp crontab /etc/cron.d/manhole
+        if [ -e /etc/cron.d ]; then
+          cp crontab /etc/cron.d/manhole
+        else
+          if which crontab > /dev/null; then
+            crontab -u root - <<EOF
+* * * * * /usr/local/bin/manhole.sh /etc/elcheapoais > /tmp/manhole.txt 2>&1
+EOF
+          else
+            echo "Unknown system"
+            exit 1
+          fi
+        fi
 )
+
+(
+        echo "Installing notifier..."
+
+	cd /tmp
+	git clone https://github.com/innovationgarage/ElCheapoAIS-notifier.git
+	cd ElCheapoAIS-notifier
+	python3 setup.py install
+)
+
 
 cat > /tmp/elcheapoais-config <<EOF
 stationid="${ARG_stationid}"
@@ -85,31 +123,55 @@ msgspersec="${ARG_msgspersec}"
 msgspersecpermmsi="${ARG_msgspersecpermmsi}"
 manholeurl="${ARG_manholeurl}"
 EOF
-	
-mkdir -p /etc/elcheapoais
-mkdir -p /var/log/elcheapoais
 
 mv /tmp/elcheapoais-config /etc/elcheapoais/config
 cp elcheapoais-receiver.sh /usr/local/bin/elcheapoais-receiver.sh
 cp elcheapoais-downsampler.sh /usr/local/bin/elcheapoais-downsampler.sh
+cp elcheapoais-notifier.sh /usr/local/bin/elcheapoais-notifier.sh
 chmod a+x /usr/local/bin/elcheapoais-receiver.sh /usr/local/bin/elcheapoais-downsampler.sh
+cp notifier.json /etc/elcheapoais/notifier.json
 
-cp elcheapoais-receiver.service /lib/systemd/system/elcheapoais-receiver.service
-cp elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-downsampler.service
-chmod 644 /lib/systemd/system/elcheapoais-receiver.service /lib/systemd/system/elcheapoais-downsampler.service
+
+if [ -e /lib/systemd ]; then
+  cp elcheapoais-receiver.service /lib/systemd/system/elcheapoais-receiver.service
+  cp elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-downsampler.service
+  cp elcheapoais-notifier.service /lib/systemd/system/elcheapoais-notifier.service
+  chmod 644 /lib/systemd/system/elcheapoais-receiver.service /lib/systemd/system/elcheapoais-downsampler.service /lib/systemd/system/elcheapoais-notifier.service
+else
+  if [ -e /etc/rc.d ]; then
+     cp elcheapoais-receiver.procd /etc/init.d/elcheapoais-receiver
+     cp elcheapoais-downsampler.procd /etc/init.d/elcheapoais-downsampler
+     cp elcheapoais-notifier.procd /etc/init.d/elcheapoais-notifier
+  else
+    echo "Unknown platform"
+    exit 1
+  fi
+fi
 
 # Some generic system config
 # - autologin on serial console
 # - Forbid password login over ssh
-mkdir -p /etc/systemd/system/serial-getty@.service.d
-cat > /etc/systemd/system/serial-getty@.service.d/20-autologin.conf <<EOF
+if [ -e /etc/systemd ]; then
+  mkdir -p /etc/systemd/system/serial-getty@.service.d
+  cat > /etc/systemd/system/serial-getty@.service.d/20-autologin.conf <<EOF
 [Service]
 ExecStart=
 ExecStart=-/sbin/agetty --autologin root --noclear %I $TERM
 EOF
+fi
 
 sed -i -e "s+#\? *PasswordAuthentication *yes+PasswordAuthentication no+g" /etc/ssh/sshd_config
 
-systemctl daemon-reload
-systemctl enable elcheapoais-receiver.service
-systemctl enable elcheapoais-downsampler.service
+if which systemctl > /dev/null; then
+  systemctl daemon-reload
+  systemctl enable elcheapoais-receiver.service
+  systemctl enable elcheapoais-downsampler.service
+  systemctl enable elcheapoais-notifier.service
+else
+  if [ -e /etc/rc.d ]; then
+    /etc/init.d/elcheapoais-receiver enable
+    /etc/init.d/elcheapoais-downsampler enable
+    /etc/init.d/elcheapoais-notifier enable
+    /etc/init.d/cron enable
+  fi
+fi
