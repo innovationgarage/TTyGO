@@ -2,14 +2,14 @@
 
 source /etc/elcheapoais/config
 
-if [ "$station_id" == "unknonw" ]; then
+if [ "$stationid" == "unknown" ]; then
     echo "Finding station id using device $device..."
 
     stty -F "$device" $commparams
     
-    mmsi="$(grep "AIVDO" "$device" |
+    mmsi="$(grep --line-buffered "AIVDO" "$device" |
               aisdecode 2> /dev/null |
-              grep mmsi |
+              grep --line-buffered mmsi |
               head -n 1 |
               sed -e 's+.*mmsi": \([0-9]*\),.*+\1+g')"
 
