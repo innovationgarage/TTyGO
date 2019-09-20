@@ -69,7 +69,7 @@ void terminal_put(char c)
 {
   switch (c)
   {
-    case '\n':
+    case LF:
       cursor_left = 1;
       cursor_top++;
       break;
@@ -89,7 +89,7 @@ void terminal_loop()
   {
     char c = Serial.read();
     Serial.print("Received: ");
-    Serial.print(c,DEC);
+    Serial.print(c, DEC);
     Serial.println();
 
     switch (c)
@@ -106,6 +106,9 @@ void terminal_loop()
           {
             case 'c':
               terminal_clear();
+              break;
+
+            case LF:
               is_on_command_mode = false; // end of command mode
               break;
           }
