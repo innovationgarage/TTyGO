@@ -90,15 +90,31 @@ const int control_sequence_param_max = 3;
 int control_sequence_param[control_sequence_param_max];
 int control_sequence_param_pos = 0;
 
+// Parses a numeric parameter from the param buffer
+void param_temp_buffer_digest()
+{
+  if (param_temp_buffer_pos > 0)
+    control_sequence_param[control_sequence_param_pos] = atoi(param_temp_buffer); // What happens in case of error?
+  else
+    control_sequence_param[control_sequence_param_pos] = 1; // Default
+
+  control_sequence_param_pos++;
+  param_temp_buffer_pos = 0;
+}
+
+// Feeds a char to the param buffer
+void param_temp_buffer_eat(char c)
+{
+  param_temp_buffer[param_temp_buffer_pos++] = c;
+  param_temp_buffer[param_temp_buffer_pos] = NUL;
+}
+
 void terminal_loop()
 {
   bool lcd_dirty = true; // invoke a redraw
   while (Serial.available())
   {
     char c = Serial.read();
-    /*Serial.print("Received: ");
-      Serial.print(c, DEC);
-      Serial.println();*/
 
     switch (c)
     {
@@ -106,34 +122,49 @@ void terminal_loop()
         is_on_command_mode = true;
         is_on_control_sequence = false;
         lcd_dirty = false;
+        control_sequence_param_pos = 0;
         break;
 
       default:
         if (is_on_control_sequence)
         {
           if (c == '-' || (c >= '0' && c <= '9'))
-          {
-            // It is a number, possibly
-            param_temp_buffer[param_temp_buffer_pos++] = c;
-            param_temp_buffer[param_temp_buffer_pos] = NUL;
-          }
+            param_temp_buffer_eat(c);
           else
           {
             switch (c)
             {
-              case 'A':
-              case 'B':
-              case 'C':
-              case 'D':
-                // Move cursor
-                if (param_temp_buffer_pos > 0)
-                  control_sequence_param[0] = atoi(param_temp_buffer); // What happens in case of error?
-                else
-                  control_sequence_param[0] = 1; // Default for A,B,C and D
+              case ';':
+                param_temp_buffer_digest();
+                break;
 
-                terminal_setcursor(cursor_left  + ((c == 'C' || c == 'D') ? ((c == 'D' ? -1 : 1)*control_sequence_param[0]) : 0),
-                                   cursor_top + ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1)*control_sequence_param[0]) : 0));
-                                   
+              default: // For A,B,C,D,E,F,G,H
+                param_temp_buffer_digest();
+
+                // Absolute cursor pos
+                if (c == 'H')
+                {
+                  cursor_top =  control_sequence_param[0];
+                  cursor_left = control_sequence_param_pos >= 1 ? control_sequence_param[1] : 1;
+                }
+                else
+                {
+                  // Line based (E,F)
+                  if (c == 'E' || c == 'F')
+                  {
+                    cursor_left = 1;
+                    cursor_top += (c == 'E' ? 1 : -1) * control_sequence_param[0];
+                  }
+                  else
+                  {
+                    cursor_left = (c == 'G') ? control_sequence_param[0] : cursor_left;
+
+                    // Relative
+                    cursor_left += ((c == 'C' || c == 'D') ? ((c == 'D' ? -1 : 1) * control_sequence_param[0]) : 0);
+                    cursor_top += ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1) * control_sequence_param[0]) : 0);
+                  }
+                }
+
                 is_on_command_mode = false;
                 is_on_control_sequence = false;
                 break;
