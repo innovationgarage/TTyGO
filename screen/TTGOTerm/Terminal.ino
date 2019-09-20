@@ -81,34 +81,78 @@ void terminal_put(char c)
 }
 
 // Main routine
-bool is_on_command_mode = false;
+bool is_on_command_mode = false, is_on_control_sequence = false;
+const int param_temp_buffer_max = 8;
+char param_temp_buffer[param_temp_buffer_max];
+int param_temp_buffer_pos = 0;
+
+const int control_sequence_param_max = 3;
+int control_sequence_param[control_sequence_param_max];
+int control_sequence_param_pos = 0;
+
 void terminal_loop()
 {
   bool lcd_dirty = true; // invoke a redraw
   while (Serial.available())
   {
     char c = Serial.read();
-    Serial.print("Received: ");
-    Serial.print(c, DEC);
-    Serial.println();
+    /*Serial.print("Received: ");
+      Serial.print(c, DEC);
+      Serial.println();*/
 
     switch (c)
     {
       case ESC:
         is_on_command_mode = true;
+        is_on_control_sequence = false;
         lcd_dirty = false;
         break;
 
       default:
-        if (is_on_command_mode)
+        if (is_on_control_sequence)
+        {
+          if (c == '-' || (c >= '0' && c <= '9'))
+          {
+            // It is a number, possibly
+            param_temp_buffer[param_temp_buffer_pos++] = c;
+            param_temp_buffer[param_temp_buffer_pos] = NUL;
+          }
+          else
+          {
+            switch (c)
+            {
+              case 'A':
+              case 'B':
+              case 'C':
+              case 'D':
+                // Move cursor up
+                if (param_temp_buffer_pos > 0)
+                  control_sequence_param[0] = atoi(param_temp_buffer); // What happens in case of error?
+                else
+                  control_sequence_param[0] = 1; // Default for A,B,C and D
+
+                terminal_setcursor(cursor_left, cursor_top - control_sequence_param[0]);
+                is_on_command_mode = false;
+                is_on_control_sequence = false;
+                break;
+            }
+          }
+        }
+        else if (is_on_command_mode)
         {
           switch (c)
           {
             case 'c':
               terminal_clear();
+              is_on_command_mode = false; // end of command mode
               break;
 
-            case LF:
+            case '[':
+              is_on_control_sequence = true; // control sequence
+              param_temp_buffer_pos = 0;
+              break;
+
+            default:
               is_on_command_mode = false; // end of command mode
               break;
           }
