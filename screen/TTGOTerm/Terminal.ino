@@ -125,13 +125,15 @@ void terminal_loop()
               case 'B':
               case 'C':
               case 'D':
-                // Move cursor up
+                // Move cursor
                 if (param_temp_buffer_pos > 0)
                   control_sequence_param[0] = atoi(param_temp_buffer); // What happens in case of error?
                 else
                   control_sequence_param[0] = 1; // Default for A,B,C and D
 
-                terminal_setcursor(cursor_left, cursor_top - control_sequence_param[0]);
+                terminal_setcursor(cursor_left  + ((c == 'C' || c == 'D') ? ((c == 'D' ? -1 : 1)*control_sequence_param[0]) : 0),
+                                   cursor_top + ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1)*control_sequence_param[0]) : 0));
+                                   
                 is_on_command_mode = false;
                 is_on_control_sequence = false;
                 break;
