@@ -1,5 +1,5 @@
 State control_sequence(char c) {
-  if (debug_parsing) { Serial.print("CSI.start\n"); Serial.flush(); }
+  if (debug_parsing) Serial.print("CSI.start\n");
   control_sequence_param_pos = 0;
   param_temp_buffer_pos = 0;
   return control_sequence_entry(c);
@@ -9,12 +9,12 @@ State control_sequence_entry(char c) {
   switch (c)
   {
     case '-': case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': 
-      if (debug_parsing) { Serial.print("CSI.param");  Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print("CSI.param");  Serial.print((int)c); Serial.print("\n"); }
       param_temp_buffer_eat(c);
       return (State) &control_sequence_entry;
 
     case ';':
-      if (debug_parsing) { Serial.print("CSI.newparam"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print("CSI.newparam"); Serial.print((int)c); Serial.print("\n"); }
       param_temp_buffer_digest(); // Prepares for next parameter... or control code
       return (State) &control_sequence_entry;
 
@@ -33,7 +33,6 @@ State control_sequence_entry(char c) {
               Serial.print(";");
               Serial.print(terminal_width);
               Serial.print("t");
-              Serial.flush();
           }
       }
       return (State) &initial_state;
@@ -50,7 +49,7 @@ State control_sequence_entry(char c) {
       // Absolute cursor pos
       if (c == 'H')
       {
-        if (debug_parsing) { Serial.print("CSI.H\n"); Serial.flush(); }
+        if (debug_parsing) Serial.print("CSI.H\n");
         cursor_top =  control_sequence_param[0];
         cursor_left = control_sequence_param_pos >= 1 ? control_sequence_param[1] : 1;
       }
@@ -59,13 +58,13 @@ State control_sequence_entry(char c) {
         // Line based (E,F)
         if (c == 'E' || c == 'F')
         {
-          if (debug_parsing) { Serial.print("CSI.EF"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+          if (debug_parsing) { Serial.print("CSI.EF"); Serial.print((int)c); Serial.print("\n"); }
           cursor_left = 1;
           cursor_top += (c == 'E' ? 1 : -1) * control_sequence_param[0];
         }
         else
         {
-        if (debug_parsing) { Serial.print("CSI.relative"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+        if (debug_parsing) { Serial.print("CSI.relative"); Serial.print((int)c); Serial.print("\n"); }
           cursor_left = (c == 'G') ? control_sequence_param[0] : cursor_left;
 
           // Relative

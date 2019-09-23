@@ -147,9 +147,9 @@ void terminal_loop()
   while (Serial.available())
   {
     current_state = (State) current_state(Serial.read());
-
-    if (lcd_dirty)
-      terminal_draw();
   }
+  if (lcd_dirty)
+    terminal_draw();
+  delayMicroseconds(100000);
 }
 
