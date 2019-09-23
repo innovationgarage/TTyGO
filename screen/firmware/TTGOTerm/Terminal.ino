@@ -28,16 +28,6 @@ int cursor_left, cursor_top, char_height, char_width,
     terminal_width, terminal_height, display_height_offset, display_width_offset; // This is all set by the terminal_setup based on current font and display size
 char terminal_buffer[80 * 80]; // Just a maximum, scrolling is not implemented
 
-// Control sequences and internal buffers
-bool is_on_command_mode = false, is_on_control_sequence = false;
-const int param_temp_buffer_max = 8;
-char param_temp_buffer[param_temp_buffer_max];
-int param_temp_buffer_pos = 0;
-
-const int control_sequence_param_max = 3;
-int control_sequence_param[control_sequence_param_max];
-int control_sequence_param_pos = 0;
-
 // Sets the terminal cursor to the proper col and row, based on 1
 void terminal_setcursor(int col, int row)
 {
@@ -59,7 +49,7 @@ void terminal_draw()
 }
 
 // Clears the char buffer
-void terminal_clear(int mode = 2)
+void terminal_clear(int mode)
 {
   int cursor_position = (cursor_left - 1) + ((cursor_top - 1) * terminal_width);
   bool should_clear_next = true;
@@ -120,10 +110,17 @@ void terminal_put(char c)
       terminal_buffer[(cursor_left - 1) + (cursor_top - 1)*terminal_width] = c; // Put the char and advance
       ++cursor_left;
   }
+  if (cursor_left >= 80) {
+    cursor_left = 1;
+    cursor_top++;
+  }
+  if (cursor_top >= 80) {
+    cursor_top = 1; // Fuck off, we said no scrolling, right? Just don't crash
+  }
 }
 
 // Parses a numeric parameter from the param buffer
-void param_temp_buffer_digest(int default_value = 1)
+void param_temp_buffer_digest(int default_value)
 {
   if (param_temp_buffer_pos > 0)
     control_sequence_param[control_sequence_param_pos] = atoi(param_temp_buffer); // What happens in case of error?
@@ -141,14 +138,7 @@ void param_temp_buffer_eat(char c)
   param_temp_buffer[param_temp_buffer_pos] = NUL;
 }
 
-// Exits all special modes and resets all buffer positions
-void exit_all_command_control_modes()
-{
-  is_on_command_mode = false;
-  is_on_control_sequence = false;
-  control_sequence_param_pos = 0;
-  param_temp_buffer_pos = 0;
-}
+State current_state = (State) &initial_state;
 
 // Main routine
 void terminal_loop()
@@ -156,108 +146,10 @@ void terminal_loop()
   bool lcd_dirty = true; // invoke a redraw
   while (Serial.available())
   {
-    char c = Serial.read();
+    current_state = (State) current_state(Serial.read());
 
-    switch (c)
-    {
-      case ESC:
-        is_on_command_mode = true;
-        is_on_control_sequence = false;
-        lcd_dirty = false;
-        break;
-
-      default:
-        if (is_on_control_sequence)
-        {
-          if (c == '-' || (c >= '0' && c <= '9'))
-            param_temp_buffer_eat(c);
-          else
-            switch (c)
-            {
-              case ';':
-                param_temp_buffer_digest(); // Prepares for next parameter... or control code
-                break;
-
-              case 'P': // Other control seqs https://www.xfree86.org/current/ctlseqs.html
-                param_temp_buffer_digest();
-                switch (control_sequence_param[0])
-                {
-                  case 1:
-                    switch (control_sequence_param[1])
-                    {
-                      case 8: // Report the size of the text area in characters as CSI 8 ; height ; width t
-                      case 9: // Report the size of the screen in characters as CSI 9 ; height ; width t
-                        Serial.print("[");
-                        Serial.print(terminal_height);
-                        Serial.print(";");
-                        Serial.print(terminal_width);
-                        Serial.print("t");
-                    }
-                    break;
-                }
-                break;
-
-              case 'J': // Clear screen
-                param_temp_buffer_digest(0);
-                terminal_clear(control_sequence_param[0]);
-                exit_all_command_control_modes();
-                break;
-
-              default: // For A,B,C,D,E,F,G,H
-                param_temp_buffer_digest();
-
-                // Absolute cursor pos
-                if (c == 'H')
-                {
-                  cursor_top =  control_sequence_param[0];
-                  cursor_left = control_sequence_param_pos >= 1 ? control_sequence_param[1] : 1;
-                }
-                else
-                {
-                  // Line based (E,F)
-                  if (c == 'E' || c == 'F')
-                  {
-                    cursor_left = 1;
-                    cursor_top += (c == 'E' ? 1 : -1) * control_sequence_param[0];
-                  }
-                  else
-                  {
-                    cursor_left = (c == 'G') ? control_sequence_param[0] : cursor_left;
-
-                    // Relative
-                    cursor_left += ((c == 'C' || c == 'D') ? ((c == 'D' ? -1 : 1) * control_sequence_param[0]) : 0);
-                    cursor_top += ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1) * control_sequence_param[0]) : 0);
-                  }
-                }
-                exit_all_command_control_modes();
-                break;
-            }
-        }
-        else if (is_on_command_mode)
-        {
-          switch (c)
-          {
-            case 'c': // Reset to initial state
-              terminal_clear();
-              is_on_command_mode = false; // end of command mode
-              break;
-
-            case CSI:
-              is_on_control_sequence = true; // control sequence
-              break;
-
-            default:
-              is_on_command_mode = false; // end of command mode
-              break;
-          }
-        }
-        else
-          terminal_put(c); // Just print the character
-        break;
-    }
-
+    if (lcd_dirty)
+      terminal_draw();
   }
-
-  if (lcd_dirty)
-    terminal_draw();
 }
+
