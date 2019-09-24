@@ -23,10 +23,21 @@ ButtonKing button_left(BTN_LEFT, true), button_middle(BTN_MID, true), button_rig
 
 
 
+#define TERM(x, y) (terminal_buffer[(x - 1) + (y - 1)*terminal_width])
+
 typedef struct {
    int x;
    int y;
 } Cursor;
+
+typedef struct {
+   int upper;
+   int lower;
+} ScrollRegion;
+
+void terminal_scroll(int start, int end, int up);
+void terminal_scroll_line(int y, int start, int end, int direction_left=0);
+void terminal_clear_line(int x, int y, int mode =  2);
 
 void terminal_cursor_save();
 void terminal_cursor_restore();
@@ -39,7 +50,9 @@ void param_temp_buffer_digest(int default_value = 1);
 void param_temp_buffer_eat(char c);
 
 // This is all set by the terminal_setup based on current font and display size
+extern ScrollRegion scroll_region;
 extern Cursor current_cursor, saved_cursor;
+extern int tab_size;
 extern int char_height, char_width,
     terminal_width, terminal_height, display_height_offset, display_width_offset;
 // Just a maximum, scrolling is not implemented

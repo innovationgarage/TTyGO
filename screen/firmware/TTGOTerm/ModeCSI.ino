@@ -18,33 +18,26 @@ State control_sequence_entry(char c) {
       param_temp_buffer_digest(); // Prepares for next parameter... or control code
       return (State) &control_sequence_entry;
 
-    case 't': // Other control seqs https://www.xfree86.org/current/ctlseqs.html
-      if (debug_parsing) Serial.print("CSI.P\n");
-      param_temp_buffer_digest();
-      switch (control_sequence_param[0])
-      {
-        case 1:
-          switch (control_sequence_param[1])
-          {
-            case 8: // Report the size of the text area in characters as CSI 8 ; height ; width t
-            case 9: // Report the size of the screen in characters as CSI 9 ; height ; width t
-              Serial.print("[");
-              Serial.print(terminal_height);
-              Serial.print(";");
-              Serial.print(terminal_width);
-              Serial.print("t");
-              Serial.flush();
-          }
+
+    // These appear in order or final character, as they do in https://www.xfree86.org/current/ctlseqs.html
+    // Unimplemented CSI codes from that document have a MISSING comment here
+
+    case '@':
+      param_temp_buffer_digest(1);
+
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        terminal_put(' ');
       }
       return (State) &initial_state;
 
-    case 'J': // Clear screen
-      if (debug_parsing) Serial.print("CSI.J\n");
-      param_temp_buffer_digest(0);
-      terminal_clear(control_sequence_param[0]);
-      return (State) &initial_state;
-
-    default: // For A,B,C,D,E,F,G,H
+    case 'A':
+    case 'B':
+    case 'C':
+    case 'D':
+    case 'E':
+    case 'F':
+    case 'G':
+    case 'H':
       param_temp_buffer_digest();
 
       // Absolute cursor pos
@@ -73,6 +66,127 @@ State control_sequence_entry(char c) {
           current_cursor.y += ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1) * control_sequence_param[0]) : 0);
         }
       }
+      return (State) &initial_state;
+
+    case 'I':
+      param_temp_buffer_digest(1);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        current_cursor.x = ((current_cursor.x / tab_size) + 1) * tab_size;
+      }
+      return (State) &initial_state;
+    
+    case 'J': // Clear screen
+      if (debug_parsing) Serial.print("CSI.J\n");
+      param_temp_buffer_digest(0);
+      terminal_clear(control_sequence_param[0]);
+      return (State) &initial_state;
+
+    // MISSING CSI ? Ps J
+
+    case 'K':
+
+      param_temp_buffer_digest(0);
+      terminal_clear_line(current_cursor.x, current_cursor.y, control_sequence_param[0]);
+      return (State) &initial_state;
+
+    // MISSING: CSI ? Ps K
+
+    case 'L':
+      param_temp_buffer_digest(1);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        terminal_scroll(current_cursor.y, terminal_height, 0);
+        terminal_clear_line(0, current_cursor.y, 2);
+      }
+      return (State) &initial_state;
+    
+    case 'M':
+      param_temp_buffer_digest(1);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        terminal_scroll(current_cursor.y, terminal_height, 1);
+        terminal_clear_line(0, scroll_region.lower, 2);
+      }
+      return (State) &initial_state;
+
+    case 'P':
+      param_temp_buffer_digest(1);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        terminal_scroll_line(current_cursor.y, current_cursor.x, terminal_width, 1);
+        TERM(terminal_width, current_cursor.y) = ' ';
+      }
+      return (State) &initial_state;
+
+    case 'S':
+      param_temp_buffer_digest(1);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        terminal_scroll(0, terminal_height, 1);
+        terminal_clear_line(0, scroll_region.lower, 2);
+      }
+      return (State) &initial_state;
+
+    case 'T':
+      param_temp_buffer_digest(1);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        terminal_scroll(0, terminal_height, 0);
+        terminal_clear_line(0, scroll_region.upper, 2);
+      }
+      return (State) &initial_state;
+
+    case 'X':
+      param_temp_buffer_digest(1);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        TERM(current_cursor.x + i, current_cursor.y) = ' ';
+      }
+      return (State) &initial_state;
+
+    case 'Z':
+      param_temp_buffer_digest(1);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        current_cursor.x = ((current_cursor.x / tab_size) - 1) * tab_size;
+      }
+      return (State) &initial_state;
+
+    case '`':
+      // MISSING: CSI Pm `
+      return (State) &initial_state;
+
+    case 'b':
+      param_temp_buffer_digest(1);
+      terminal_scroll_line(current_cursor.y, current_cursor.x-1, current_cursor.x+control_sequence_param[0]-1, 0);
+      return (State) &initial_state;
+
+    case 'c':
+      // Tell the user we're a VT220 with a printer (our wifi?) and no extra features...
+      Serial.print("\x1b[?60;2;c");
+      Serial.flush();
+
+      return (State) &initial_state;
+
+
+
+
+   
+    case 't': // Other control seqs https://www.xfree86.org/current/ctlseqs.html
+      if (debug_parsing) Serial.print("CSI.P\n");
+      param_temp_buffer_digest();
+      switch (control_sequence_param[0])
+      {
+        case 1:
+          switch (control_sequence_param[1])
+          {
+            case 8: // Report the size of the text area in characters as CSI 8 ; height ; width t
+            case 9: // Report the size of the screen in characters as CSI 9 ; height ; width t
+              Serial.print("[");
+              Serial.print(terminal_height);
+              Serial.print(";");
+              Serial.print(terminal_width);
+              Serial.print("t");
+              Serial.flush();
+          }
+      }
+      return (State) &initial_state;
+
+
+    default:
       return (State) &initial_state;
   }
 }
