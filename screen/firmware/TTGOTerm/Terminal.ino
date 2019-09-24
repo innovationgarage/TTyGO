@@ -1,27 +1,7 @@
 /* Terminal emulator
 
-    Implements a simple ANSI escape code terminal interpreter using TTGO OLED ESP8622 SH1106 as platform.
-    Uses U8g2lib graphical library, so it is compatible with a lot of displays https://github.com/olikraus/u8g2/wiki
-
-    IMPLEMENTED:
-
-    Escape sequences:
-
-      ESC c Reset to Initial State
-
-    CSI sequences:
-
-      CSI n A
-      CSI n B
-      CSI n C
-      CSI n D
-      CSI n E
-      CSI n F
-      CSI n G
-      CSI n ; m H
-      CSI n J
-      CSI Ps ; Ps ; P for CSI 1 ; 8 ; P and CSI 1 ; 9 ; P (Report the size of the text area)
-
+   Implements a simple ANSI escape code terminal interpreter using TTGO OLED ESP8622 SH1106 as platform.
+   Uses U8g2lib graphical library, so it is compatible with a lot of displays https://github.com/olikraus/u8g2/wiki
 */
 
 Cursor current_cursor, saved_cursor;
