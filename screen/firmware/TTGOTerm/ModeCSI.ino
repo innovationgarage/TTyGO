@@ -51,8 +51,8 @@ State control_sequence_entry(char c) {
       if (c == 'H')
       {
         if (debug_parsing) { Serial.print("CSI.H\n"); Serial.flush(); }
-        cursor_top =  control_sequence_param[0];
-        cursor_left = control_sequence_param_pos >= 1 ? control_sequence_param[1] : 1;
+        current_cursor.y =  control_sequence_param[0];
+        current_cursor.x = control_sequence_param_pos >= 1 ? control_sequence_param[1] : 1;
       }
       else
       {
@@ -60,17 +60,17 @@ State control_sequence_entry(char c) {
         if (c == 'E' || c == 'F')
         {
           if (debug_parsing) { Serial.print("CSI.EF"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
-          cursor_left = 1;
-          cursor_top += (c == 'E' ? 1 : -1) * control_sequence_param[0];
+          current_cursor.x = 1;
+          current_cursor.y += (c == 'E' ? 1 : -1) * control_sequence_param[0];
         }
         else
         {
         if (debug_parsing) { Serial.print("CSI.relative"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
-          cursor_left = (c == 'G') ? control_sequence_param[0] : cursor_left;
+          current_cursor.x = (c == 'G') ? control_sequence_param[0] : current_cursor.x;
 
           // Relative
-          cursor_left += ((c == 'C' || c == 'D') ? ((c == 'D' ? -1 : 1) * control_sequence_param[0]) : 0);
-          cursor_top += ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1) * control_sequence_param[0]) : 0);
+          current_cursor.x += ((c == 'C' || c == 'D') ? ((c == 'D' ? -1 : 1) * control_sequence_param[0]) : 0);
+          current_cursor.y += ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1) * control_sequence_param[0]) : 0);
         }
       }
       return (State) &initial_state;

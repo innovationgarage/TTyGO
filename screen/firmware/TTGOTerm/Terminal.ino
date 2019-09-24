@@ -24,9 +24,18 @@
 
 */
 
-int cursor_left, cursor_top, char_height, char_width,
+Cursor current_cursor, saved_cursor;
+int char_height, char_width,
     terminal_width, terminal_height, display_height_offset, display_width_offset; // This is all set by the terminal_setup based on current font and display size
 char terminal_buffer[80 * 80]; // Just a maximum, scrolling is not implemented
+
+void terminal_cursor_save() {
+  saved_cursor = current_cursor;
+}
+
+void terminal_cursor_restore() {
+  current_cursor = saved_cursor;
+}
 
 // Sets the terminal cursor to the proper col and row, based on 1
 void terminal_setcursor(int col, int row)
@@ -51,7 +60,7 @@ void terminal_draw()
 // Clears the char buffer
 void terminal_clear(int mode)
 {
-  int cursor_position = (cursor_left - 1) + ((cursor_top - 1) * terminal_width);
+  int cursor_position = (current_cursor.x - 1) + ((current_cursor.y - 1) * terminal_width);
   bool should_clear_next = true;
 
   for (int i = 0; i < terminal_width * terminal_height; i++)
@@ -73,8 +82,8 @@ void terminal_clear(int mode)
 
   if (mode >= 2) // Reposition cursor to the top left
   {
-    cursor_left = 1;
-    cursor_top = 1;
+    current_cursor.x = 1;
+    current_cursor.y = 1;
   }
 
   terminal_draw();
@@ -103,19 +112,19 @@ void terminal_put(char c)
   switch (c)
   {
     case LF:
-      cursor_left = 1; cursor_top++; // Line feed
+      current_cursor.x = 1; current_cursor.y++; // Line feed
       break;
 
     default:
-      terminal_buffer[(cursor_left - 1) + (cursor_top - 1)*terminal_width] = c; // Put the char and advance
-      ++cursor_left;
+      terminal_buffer[(current_cursor.x - 1) + (current_cursor.y - 1)*terminal_width] = c; // Put the char and advance
+      ++current_cursor.x;
   }
-  if (cursor_left >= 80) {
-    cursor_left = 1;
-    cursor_top++;
+  if (current_cursor.x >= 80) {
+    current_cursor.x = 1;
+    current_cursor.y++;
   }
-  if (cursor_top >= 80) {
-    cursor_top = 1; // Fuck off, we said no scrolling, right? Just don't crash
+  if (current_cursor.y >= 80) {
+    current_cursor.y = 1; // Fuck off, we said no scrolling, right? Just don't crash
   }
 }
 

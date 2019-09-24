@@ -23,7 +23,13 @@ ButtonKing button_left(BTN_LEFT, true), button_middle(BTN_MID, true), button_rig
 
 
 
+typedef struct {
+   int x;
+   int y;
+} Cursor;
 
+void terminal_cursor_save();
+void terminal_cursor_restore();
 void terminal_setcursor(int col, int row);
 void terminal_draw();
 void terminal_clear(int mode = 2);
@@ -33,7 +39,8 @@ void param_temp_buffer_digest(int default_value = 1);
 void param_temp_buffer_eat(char c);
 
 // This is all set by the terminal_setup based on current font and display size
-extern int cursor_left, cursor_top, char_height, char_width,
+extern Cursor current_cursor, saved_cursor;
+extern int char_height, char_width,
     terminal_width, terminal_height, display_height_offset, display_width_offset;
 // Just a maximum, scrolling is not implemented
 extern char terminal_buffer[80 * 80];
