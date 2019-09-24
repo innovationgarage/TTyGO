@@ -52,7 +52,7 @@ int control_sequence_param_pos = 0;
 typedef void Function();
 typedef Function *(*State)(char c);
 
-int debug_parsing = 1;
+int debug_parsing = 0;
 
 
 State initial_state(char c);
