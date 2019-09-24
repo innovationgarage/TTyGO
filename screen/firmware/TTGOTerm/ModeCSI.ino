@@ -18,7 +18,7 @@ State control_sequence_entry(char c) {
       param_temp_buffer_digest(); // Prepares for next parameter... or control code
       return (State) &control_sequence_entry;
 
-    case 'P': // Other control seqs https://www.xfree86.org/current/ctlseqs.html
+    case 't': // Other control seqs https://www.xfree86.org/current/ctlseqs.html
       if (debug_parsing) Serial.print("CSI.P\n");
       param_temp_buffer_digest();
       switch (control_sequence_param[0])
