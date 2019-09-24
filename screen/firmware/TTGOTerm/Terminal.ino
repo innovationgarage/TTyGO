@@ -36,17 +36,17 @@ char terminal_buffer[80 * 80]; // Just a maximum, scrolling is not implemented
 void terminal_scroll(int start, int end, int up) {
   int top = max(scroll_region.upper, start);
   int bottom = min(scroll_region.lower, end);
-  
+
   if (up == 1) {
     for (int y = top; y <= bottom; y++) {
       for (int x = 1; x <= terminal_width; x++) {
-        TERM(x, y) = TERM(x, y+1);
+        TERM(x, y) = TERM(x, y + 1);
       }
     }
   } else {
     for (int y = bottom; y >= bottom; y--) {
       for (int x = 1; x <= terminal_width; x++) {
-        TERM(x, y) = TERM(x, y-1);
+        TERM(x, y) = TERM(x, y - 1);
       }
     }
   }
@@ -55,20 +55,20 @@ void terminal_scroll(int start, int end, int up) {
 void terminal_scroll_line(int y, int start, int end, int direction_left) {
   int left = max(1, start);
   int right = min(terminal_width, end);
-  
+
   if (direction_left == 1) {
     for (int x = left; x <= right; x++) {
-      TERM(x, y) = TERM(x+1, y);
+      TERM(x, y) = TERM(x + 1, y);
     }
   } else {
     for (int x = right; x >= left; x--) {
-      TERM(x, y) = TERM(x-1, y);
+      TERM(x, y) = TERM(x - 1, y);
     }
-  }  
+  }
 }
 
 void terminal_clear_line(int x, int y, int mode) {
-  switch(mode)
+  switch (mode)
   {
     case 0:
       for (int i = x; i <= terminal_width; i++) {
@@ -80,12 +80,12 @@ void terminal_clear_line(int x, int y, int mode) {
         TERM(i, y) = ' ';
       }
       break;
-    case 2:  
+    case 2:
       for (int i = 1; i <= terminal_width; i++) {
         TERM(i, y) = ' ';
       }
       break;
-    }
+  }
 }
 
 void terminal_cursor_save() {
@@ -148,26 +148,6 @@ void terminal_clear(int mode)
   terminal_draw();
 }
 
-void terminal_setup()
-{
-  // init display
-  u8g2.begin();
-  u8g2.setFont(lcd_font);
-
-  char_height = u8g2.getMaxCharHeight();
-  char_width = u8g2.getMaxCharWidth();
-  terminal_height = u8g2.getDisplayHeight() / char_height;
-  terminal_width = u8g2.getDisplayWidth() / char_width;
-  display_height_offset = (u8g2.getDisplayHeight() - (terminal_height * char_height)) / 2;
-  display_width_offset = (u8g2.getDisplayWidth() - (terminal_width * char_width)) / 2;
-
-  scroll_region.upper = 1;
-  scroll_region.lower= terminal_height;
-
-  //u8g2.sendF("c", 0x0a7); // Invert display
-  terminal_clear();
-}
-
 // Inserts a char into the char buffer
 void terminal_put(char c)
 {
@@ -189,4 +169,3 @@ void terminal_put(char c)
     current_cursor.y = 1; // Fuck off, we said no scrolling, right? Just don't crash
   }
 }
-
