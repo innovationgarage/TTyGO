@@ -1,25 +1,24 @@
 State current_state = (State) &initial_state;
 
-// Main routine
-void terminal_loop()
-{
-  bool lcd_dirty = true; // invoke a redraw
-  while (Serial.available())
-  {
-    current_state = (State) current_state(Serial.read());
-  }
-  if (lcd_dirty)
-    terminal_draw();
-  delayMicroseconds(100000);
+void loop(void) {
+  /* Nothing here, check Setup.ino */
 }
 
+class TerminalTask : public Task {
+  protected:
+    void setup()
+    {
+      scroll_region.upper = 1;
+      scroll_region.lower = terminal_height;
+      terminal_clear();
+    }
 
-void loop(void) 
-{
-  terminal_loop();
+    void loop()
+    {
+      while (Serial.available())
+        current_state = (State) current_state(Serial.read());
+    }
 
-  // Check buttons
-  button_left.isClick();
-  button_middle.isClick();
-  button_right.isClick();
-}
+  private:
+    //uint8_t state;
+} terminal_task;
