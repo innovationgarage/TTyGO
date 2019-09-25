@@ -34,38 +34,31 @@ State control_sequence_entry(char c) {
     case 'B': // CSI Ps B Cursor Down
     case 'C': // CSI Ps C Cursor Forward
     case 'D': // CSI Ps D Cursor Backward
+      param_temp_buffer_digest();
+      current_cursor.x += ((c == 'C' || c == 'D') ? ((c == 'D' ? -1 : 1) * control_sequence_param[0]) : 0);
+      current_cursor.y += ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1) * control_sequence_param[0]) : 0);
+      return (State) &initial_state;
+
     case 'E': // CSI Ps E Cursor Next Line
     case 'F': // CSI Ps F Cursor Preceding Line
-    case 'G': // CSI Ps G Cursor Character Absolute
-    case 'H': // CSI Ps ; Ps H Cursor Position
       param_temp_buffer_digest();
 
-      // Absolute cursor pos
-      if (c == 'H')
-      {
-        if (debug_parsing) { Serial.print("CSI.H\n"); Serial.flush(); }
-        current_cursor.y =  control_sequence_param[0];
-        current_cursor.x = control_sequence_param_pos >= 1 ? control_sequence_param[1] : 1;
-      }
-      else
-      {
-        // Line based (E,F)
-        if (c == 'E' || c == 'F')
-        {
-          if (debug_parsing) { Serial.print("CSI.EF"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
-          current_cursor.x = 1;
-          current_cursor.y += (c == 'E' ? 1 : -1) * control_sequence_param[0];
-        }
-        else
-        {
-        if (debug_parsing) { Serial.print("CSI.relative"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
-          current_cursor.x = (c == 'G') ? control_sequence_param[0] : current_cursor.x;
+      if (debug_parsing) { Serial.print("CSI.EF"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      current_cursor.x = 1;
+      current_cursor.y += (c == 'E' ? 1 : -1) * control_sequence_param[0];
+      return (State) &initial_state;
 
-          // Relative
-          current_cursor.x += ((c == 'C' || c == 'D') ? ((c == 'D' ? -1 : 1) * control_sequence_param[0]) : 0);
-          current_cursor.y += ((c == 'A' || c == 'B') ? ((c == 'A' ? -1 : 1) * control_sequence_param[0]) : 0);
-        }
-      }
+    case 'G': // CSI Ps G Cursor Character Absolute
+      param_temp_buffer_digest();
+      if (debug_parsing) { Serial.print("CSI.character_absolute"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      current_cursor.x = control_sequence_param[0];
+      return (State) &initial_state;
+
+    case 'H': // CSI Ps ; Ps H Cursor Position
+      param_temp_buffer_digest();
+      if (debug_parsing) { Serial.print("CSI.H\n"); Serial.flush(); }
+      current_cursor.y =  control_sequence_param[0];
+      current_cursor.x = control_sequence_param_pos >= 1 ? control_sequence_param[1] : 1;
       return (State) &initial_state;
 
     case 'I': // CSI Ps I Cursor Forward Tabulation
