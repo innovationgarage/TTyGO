@@ -161,6 +161,19 @@ State control_sequence_entry(char c) {
 
       return (State) &initial_state;
 
+    case 'd':
+      param_temp_buffer_digest(1);
+      current_cursor.y = control_sequence_param[0];
+      return (State) &initial_state;
+
+    case 'f':
+      param_temp_buffer_digest(1);
+      current_cursor.y = control_sequence_param[0];
+      current_cursor.x = control_sequence_param[1];
+      return (State) &initial_state;
+
+
+
 
 
 
