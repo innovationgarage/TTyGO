@@ -22,7 +22,7 @@ State control_sequence_entry(char c) {
     // These appear in order or final character, as they do in https://www.xfree86.org/current/ctlseqs.html
     // Unimplemented CSI codes from that document have a MISSING comment here
 
-    case '@':
+    case '@': // CSI Ps @ Insert Blank Character(s)
       param_temp_buffer_digest(1);
 
       for (int i = 0; i < control_sequence_param[0]; i++) {
@@ -30,14 +30,14 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
 
-    case 'A':
-    case 'B':
-    case 'C':
-    case 'D':
-    case 'E':
-    case 'F':
-    case 'G':
-    case 'H':
+    case 'A': // CSI Ps A Cursor Up
+    case 'B': // CSI Ps B Cursor Down
+    case 'C': // CSI Ps C Cursor Forward
+    case 'D': // CSI Ps D Cursor Backward
+    case 'E': // CSI Ps E Cursor Next Line
+    case 'F': // CSI Ps F Cursor Preceding Line
+    case 'G': // CSI Ps G Cursor Character Absolute
+    case 'H': // CSI Ps ; Ps H Cursor Position
       param_temp_buffer_digest();
 
       // Absolute cursor pos
@@ -68,30 +68,29 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
 
-    case 'I':
+    case 'I': // CSI Ps I Cursor Forward Tabulation
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_cursor_move_to_tab(1);
       }
       return (State) &initial_state;
     
-    case 'J': // Clear screen
+    case 'J': // CSI Ps J Erase in Display
       if (debug_parsing) Serial.print("CSI.J\n");
       param_temp_buffer_digest(0);
       terminal_clear(control_sequence_param[0]);
       return (State) &initial_state;
 
-    // MISSING CSI ? Ps J
+    // MISSING CSI ? Ps J Erase in Display
 
-    case 'K':
-
+    case 'K': // CSI Ps K Erase in Line
       param_temp_buffer_digest(0);
       terminal_clear_line(current_cursor.x, current_cursor.y, control_sequence_param[0]);
       return (State) &initial_state;
 
-    // MISSING: CSI ? Ps K
+    // MISSING: CSI ? Ps K Erase in Line
 
-    case 'L':
+    case 'L': // CSI Ps L Insert Lines
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_scroll(current_cursor.y, terminal_height, 0);
@@ -99,7 +98,7 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
     
-    case 'M':
+    case 'M': // CSI Ps M Delete Lines
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_scroll(current_cursor.y, terminal_height, 1);
@@ -107,7 +106,7 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
 
-    case 'P':
+    case 'P': // CSI Ps P Delete Characters
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_scroll_line(current_cursor.y, current_cursor.x, terminal_width, 1);
@@ -115,7 +114,7 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
 
-    case 'S':
+    case 'S': // CSI Ps S Scroll up
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_scroll(0, terminal_height, 1);
@@ -123,7 +122,7 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
 
-    case 'T':
+    case 'T': // CSI Ps T Scroll down
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_scroll(0, terminal_height, 0);
@@ -131,50 +130,54 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
 
-    case 'X':
+    // MISSING: CSI Ps ; Ps ; Ps ; Ps ; Ps T Initiate highlight mouse tracking
+
+    case 'X': // CSI Ps X Erase Characters
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         TERM(current_cursor.x + i, current_cursor.y) = ' ';
       }
       return (State) &initial_state;
 
-    case 'Z':
+    case 'Z': // CSI Ps Z Cursor Backward Tabulation
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_cursor_move_to_tab(0);
       }
       return (State) &initial_state;
 
-    case '`':
+    case '`': // CSI P m ` Character Position Absolute
       // MISSING: CSI Pm `
       return (State) &initial_state;
 
-    case 'b':
+    case 'b': // CSI Ps b Repeat the preceding character
       param_temp_buffer_digest(1);
       terminal_scroll_line(current_cursor.y, current_cursor.x-1, current_cursor.x+control_sequence_param[0]-1, 0);
       return (State) &initial_state;
 
-    case 'c':
+    case 'c': // CSI Ps c Send Device Attributes
       // Tell the user we're a VT220 with a printer (our wifi?) and no extra features...
       Serial.print("\x1b[?60;2;c");
       Serial.flush();
 
       return (State) &initial_state;
 
-    case 'd':
+    // MISSING: CSI > Ps c Send Device Attributes
+
+    case 'd': // CSI P m d Line Position Absolute
       param_temp_buffer_digest(1);
       current_cursor.y = control_sequence_param[0];
       return (State) &initial_state;
 
-    case 'f':
+    case 'f': // CSI Ps ; Ps f Horizontal and Vertical Position
       param_temp_buffer_digest(1);
       current_cursor.y = control_sequence_param[0];
       current_cursor.x = control_sequence_param[1];
       return (State) &initial_state;
 
-    // CSI P s g Tab Clear (TBC)
-    // CSI P m h Set Mode (SM)
-    // CSI ? P m h DEC Private Mode Set (DECSET)
+    // MISSING: CSI P s g Tab Clear (TBC)
+    // MISSING: CSI P m h Set Mode (SM)
+    // MISSING: CSI ? P m h DEC Private Mode Set (DECSET)
     
     case 'i': // CSI P m i Media Copy (MC)
       param_temp_buffer_digest(0);
@@ -198,20 +201,20 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
     
-    // CSI ? P m i Media Copy (MC, DEC-specific)
-    // CSI P m l Reset Mode (RM)
-    // CSI ? P m l DEC Private Mode Reset (DECRST)
-    // CSI P m m Character Attributes (SGR)
-    // CSI P s n Device Status Report (DSR)
-    // CSI ? P s n Device Status Report (DSR, DEC-specific)
-    // CSI ! p Soft terminal reset (DECSTR)
-    // CSI P s ; P s “ p Set conformance level (DECSCL) Valid values for the first parameter:
-    // CSI P s “ q Select character protection attribute (DECSCA).
-    // CSI P s ; P s r Set Scrolling Region [top;bottom]
-    // CSI ? P m r Restore DEC Private Mode Values.
-    // CSI P t ; P l ; P b ; P r ; P s $ r Change Attributes in Rectangular Area (DECCARA).
-    // CSI s Save cursor (ANSI.SYS)
-    // CSI ? P m s Save DEC Private Mode Values.
+    // MISSING: CSI ? P m i Media Copy (MC, DEC-specific)
+    // MISSING: CSI P m l Reset Mode (RM)
+    // MISSING: CSI ? P m l DEC Private Mode Reset (DECRST)
+    // MISSING: CSI P m m Character Attributes (SGR)
+    // MISSING: CSI P s n Device Status Report (DSR)
+    // MISSING: CSI ? P s n Device Status Report (DSR, DEC-specific)
+    // MISSING: CSI ! p Soft terminal reset (DECSTR)
+    // MISSING: CSI P s ; P s “ p Set conformance level (DECSCL) Valid values for the first parameter:
+    // MISSING: CSI P s “ q Select character protection attribute (DECSCA).
+    // MISSING: CSI P s ; P s r Set Scrolling Region [top;bottom]
+    // MISSING: CSI ? P m r Restore DEC Private Mode Values.
+    // MISSING: CSI P t ; P l ; P b ; P r ; P s $ r Change Attributes in Rectangular Area (DECCARA).
+    // MISSING: CSI s Save cursor (ANSI.SYS)
+    // MISSING: CSI ? P m s Save DEC Private Mode Values.
     
     case 't': // CSI P s ; P s ; P s t Window manipulation - Other control seqs https://www.xfree86.org/current/ctlseqs.html
       if (debug_parsing) Serial.print("CSI.P\n");
@@ -234,18 +237,18 @@ State control_sequence_entry(char c) {
       return (State) &initial_state;
 
     
-    // CSI P t ; P l ; P b ; P r ; P s $ t Reverse Attributes in Rectangular Area (DECRARA).
-    // CSI u Save cursor (ANSI.SYS)
-    // CSI P t ; P l ; P b ; P r ; P p ; P t ; P l ; P p $ v Copy Rectangular Area (DECCRA)
-    // CSI P t ; P l ; P b ; P r ’ w Enable Filter Rectangle (DECEFR)
-    // CSI P s x Request Terminal Parameters (DECREQTPARM)
-    // CSI P s x Select Attribute Change Extent (DECSACE).
-    // CSI P c ; P t ; P l ; P b ; P r $ x Fill Rectangular Area (DECFRA).
-    // CSI P s ; P u ’ z Enable Locator Reporting (DECELR)
-    // CSI P t ; P l ; P b ; P r $ z Erase Rectangular Area (DECERA).
-    // CSI P m ’ { Select Locator Events (DECSLE)
-    // CSI P t ; P l ; P b ; P r $ { Selective Erase Rectangular Area (DECSERA).
-    // CSI P s ’ | Request Locator Position (DECRQLP)
+    // MISSING: CSI P t ; P l ; P b ; P r ; P s $ t Reverse Attributes in Rectangular Area (DECRARA).
+    // MISSING: CSI u Save cursor (ANSI.SYS)
+    // MISSING: CSI P t ; P l ; P b ; P r ; P p ; P t ; P l ; P p $ v Copy Rectangular Area (DECCRA)
+    // MISSING: CSI P t ; P l ; P b ; P r ’ w Enable Filter Rectangle (DECEFR)
+    // MISSING: CSI P s x Request Terminal Parameters (DECREQTPARM)
+    // MISSING: CSI P s x Select Attribute Change Extent (DECSACE).
+    // MISSING: CSI P c ; P t ; P l ; P b ; P r $ x Fill Rectangular Area (DECFRA).
+    // MISSING: CSI P s ; P u ’ z Enable Locator Reporting (DECELR)
+    // MISSING: CSI P t ; P l ; P b ; P r $ z Erase Rectangular Area (DECERA).
+    // MISSING: CSI P m ’ { Select Locator Events (DECSLE)
+    // MISSING: CSI P t ; P l ; P b ; P r $ { Selective Erase Rectangular Area (DECSERA).
+    // MISSING: CSI P s ’ | Request Locator Position (DECRQLP)
 
     default:
       return (State) &initial_state;
