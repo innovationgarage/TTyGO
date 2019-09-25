@@ -172,13 +172,11 @@ State control_sequence_entry(char c) {
       current_cursor.x = control_sequence_param[1];
       return (State) &initial_state;
 
-
-
-
-
-
-
-    case 'i':
+    // CSI P s g Tab Clear (TBC)
+    // CSI P m h Set Mode (SM)
+    // CSI ? P m h DEC Private Mode Set (DECSET)
+    
+    case 'i': // CSI P m i Media Copy (MC)
       param_temp_buffer_digest(0);
 
       
@@ -199,8 +197,23 @@ State control_sequence_entry(char c) {
           Serial.flush();
       }
       return (State) &initial_state;
-   
-    case 't': // Other control seqs https://www.xfree86.org/current/ctlseqs.html
+    
+    // CSI ? P m i Media Copy (MC, DEC-specific)
+    // CSI P m l Reset Mode (RM)
+    // CSI ? P m l DEC Private Mode Reset (DECRST)
+    // CSI P m m Character Attributes (SGR)
+    // CSI P s n Device Status Report (DSR)
+    // CSI ? P s n Device Status Report (DSR, DEC-specific)
+    // CSI ! p Soft terminal reset (DECSTR)
+    // CSI P s ; P s “ p Set conformance level (DECSCL) Valid values for the first parameter:
+    // CSI P s “ q Select character protection attribute (DECSCA).
+    // CSI P s ; P s r Set Scrolling Region [top;bottom]
+    // CSI ? P m r Restore DEC Private Mode Values.
+    // CSI P t ; P l ; P b ; P r ; P s $ r Change Attributes in Rectangular Area (DECCARA).
+    // CSI s Save cursor (ANSI.SYS)
+    // CSI ? P m s Save DEC Private Mode Values.
+    
+    case 't': // CSI P s ; P s ; P s t Window manipulation - Other control seqs https://www.xfree86.org/current/ctlseqs.html
       if (debug_parsing) Serial.print("CSI.P\n");
       param_temp_buffer_digest();
       switch (control_sequence_param[0])
@@ -220,6 +233,19 @@ State control_sequence_entry(char c) {
       }
       return (State) &initial_state;
 
+    
+    // CSI P t ; P l ; P b ; P r ; P s $ t Reverse Attributes in Rectangular Area (DECRARA).
+    // CSI u Save cursor (ANSI.SYS)
+    // CSI P t ; P l ; P b ; P r ; P p ; P t ; P l ; P p $ v Copy Rectangular Area (DECCRA)
+    // CSI P t ; P l ; P b ; P r ’ w Enable Filter Rectangle (DECEFR)
+    // CSI P s x Request Terminal Parameters (DECREQTPARM)
+    // CSI P s x Select Attribute Change Extent (DECSACE).
+    // CSI P c ; P t ; P l ; P b ; P r $ x Fill Rectangular Area (DECFRA).
+    // CSI P s ; P u ’ z Enable Locator Reporting (DECELR)
+    // CSI P t ; P l ; P b ; P r $ z Erase Rectangular Area (DECERA).
+    // CSI P m ’ { Select Locator Events (DECSLE)
+    // CSI P t ; P l ; P b ; P r $ { Selective Erase Rectangular Area (DECSERA).
+    // CSI P s ’ | Request Locator Position (DECRQLP)
 
     default:
       return (State) &initial_state;
