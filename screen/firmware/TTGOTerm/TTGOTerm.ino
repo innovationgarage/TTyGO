@@ -1,15 +1,11 @@
 #include <U8g2lib.h>
 #include <Wire.h>
-#include "ButtonKing.h"
+#include "OneButton.h"
 #include <Scheduler.h> // ESP8266Scheduler
 
 #define BTN_LEFT 12
 #define BTN_MID 14
 #define BTN_RIGHT 13
-
-ButtonKing button_left(BTN_LEFT, true),
-           button_middle(BTN_MID, true),
-           button_right(BTN_RIGHT, true);
 
 #define LCD_CLK 5
 #define LCD_SDA 4
@@ -59,7 +55,6 @@ extern int char_height, char_width,
        terminal_width, terminal_height, display_height_offset, display_width_offset;
 // Just a maximum, scrolling is not implemented
 extern char terminal_buffer[80 * 80];
-
 
 // Control sequences and internal buffers
 const int param_temp_buffer_max = 8;
