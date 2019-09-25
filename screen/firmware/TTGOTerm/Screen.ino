@@ -1,3 +1,5 @@
+bool lcd_dirty = true; // invoke a redraw
+
 // Draws terminal to the lcd
 void terminal_draw()
 {
@@ -34,7 +36,8 @@ class ScreenTask : public Task {
       unsigned long redraw_start = millis();
 
       // Refresh the oled
-      terminal_draw();
+      if (lcd_dirty)
+        terminal_draw();
 
       // Keep the framerate constant
       delay((1000 / LCD_FPS_TARGET) - (millis() - redraw_start));

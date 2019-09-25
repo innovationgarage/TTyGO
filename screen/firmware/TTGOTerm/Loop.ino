@@ -1,6 +1,8 @@
 State current_state = (State) &initial_state;
 
-void loop(void) { /* Nothing here, check Setup.ino */ }
+void loop(void) {
+  /* Nothing here, check Setup.ino */
+}
 
 class TerminalTask : public Task {
   protected:
@@ -13,14 +15,8 @@ class TerminalTask : public Task {
 
     void loop()
     {
-      bool lcd_dirty = true; // invoke a redraw
       while (Serial.available())
-      {
         current_state = (State) current_state(Serial.read());
-      }
-      if (lcd_dirty)
-        terminal_draw();
-      delayMicroseconds(100000);
     }
 
   private:
