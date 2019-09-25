@@ -164,6 +164,25 @@ State control_sequence_entry(char c) {
 
 
 
+
+    case 'i':
+      param_temp_buffer_digest(0);
+
+      
+      switch (control_sequence_param[0])
+      {
+        case 0:
+          for (int y = 1; y <= terminal_height; y++) {
+            for (int x = 1; x <= terminal_width; x++) {
+              if (TERM(x, y) != NUL) {
+                Serial.print(TERM(x, y));
+              }
+            }
+            Serial.print("\n");
+            Serial.flush();
+          }
+      }
+      return (State) &initial_state;
    
     case 't': // Other control seqs https://www.xfree86.org/current/ctlseqs.html
       if (debug_parsing) Serial.print("CSI.P\n");
