@@ -82,20 +82,6 @@ void terminal_setcursor(int col, int row)
   u8g2.setCursor(display_width_offset + char_width * (col - 1), display_height_offset + char_height * row);
 }
 
-// Draws terminal to the lcd
-void terminal_draw()
-{
-  u8g2.clearBuffer();
-  for (int x = 1; x <= terminal_width; x++)
-    for (int y = 1; y <= terminal_height; y++)
-    {
-      char c = TERM(x, y);
-      terminal_setcursor(x, y);
-      u8g2.print(c);
-    }
-  u8g2.sendBuffer();
-}
-
 // Clears the char buffer
 void terminal_clear(int mode)
 {

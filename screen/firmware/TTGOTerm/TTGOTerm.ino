@@ -3,7 +3,9 @@
 #include "ButtonKing.h"
 #include <Scheduler.h> // ESP8266Scheduler
 
-const int BTN_LEFT = 12, BTN_MID = 14, BTN_RIGHT = 13;
+#define BTN_LEFT 12
+#define BTN_MID 14
+#define BTN_RIGHT 13
 
 ButtonKing button_left(BTN_LEFT, true),
            button_middle(BTN_MID, true),
@@ -11,6 +13,7 @@ ButtonKing button_left(BTN_LEFT, true),
 
 #define LCD_CLK 5
 #define LCD_SDA 4
+#define LCD_FPS_TARGET 30
 
 #define SERIAL_BAUDS 9600
 
@@ -72,7 +75,6 @@ typedef void Function();
 typedef Function *(*State)(char c);
 
 const int debug_parsing = 0;
-
 
 State initial_state(char c);
 State command_mode(char c);
