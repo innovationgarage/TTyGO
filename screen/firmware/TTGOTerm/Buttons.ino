@@ -13,16 +13,34 @@ void button_left_click()
   button_send_key('A');
 }
 
+// Cursor left
+void button_left_hold()
+{
+  button_send_key('C');
+}
+
 // Enter
 void button_middle_click()
 {
   Serial.print(CR);
 }
 
+// ESC
+void button_middle_hold()
+{
+  Serial.print(ESC);
+}
+
 // Cursor down
 void button_right_click()
 {
   button_send_key('B');
+}
+
+// Cursor right
+void button_right_hold()
+{
+  button_send_key('D');
 }
 
 // Task for the buttons
@@ -32,8 +50,11 @@ class KeyboardTask : public Task {
     {
       // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
       button_left.attachClick(button_left_click);
+      button_left.attachLongPressStart(button_left_hold);
       button_middle.attachClick(button_middle_click);
+      button_middle.attachLongPressStart(button_middle_hold);
       button_right.attachClick(button_right_click);
+      button_right.attachLongPressStart(button_right_hold);
     }
 
     void loop()
