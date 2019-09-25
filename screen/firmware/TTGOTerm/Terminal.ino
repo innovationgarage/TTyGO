@@ -5,13 +5,24 @@
 */
 
 Cursor current_cursor, saved_cursor;
-int tab_size = 4;
+unsigned char terminal_tab_stops[80/8];
 
 ScrollRegion scroll_region;
 int char_height, char_width,
     terminal_width, terminal_height, display_height_offset, display_width_offset; // This is all set by the terminal_setup based on current font and display size
 char terminal_buffer[80 * 80]; // Just a maximum, scrolling is not implemented
 
+void terminal_cursor_move_to_tab(int next) {
+  if (next) {
+    for (current_cursor.x++; current_cursor.x <= terminal_width; current_cursor.x++) {
+      if (BIT(terminal_tab_stops, current_cursor.x)) break;
+    }
+  } else {
+    for (current_cursor.x--; current_cursor.x >= 1; current_cursor.x--) {
+      if (BIT(terminal_tab_stops, current_cursor.x)) break;
+    }    
+  }
+}
 
 void terminal_scroll(int start, int end, int up) {
   int top = max(scroll_region.upper, start);

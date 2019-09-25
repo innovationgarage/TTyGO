@@ -71,7 +71,7 @@ State control_sequence_entry(char c) {
     case 'I':
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
-        current_cursor.x = ((current_cursor.x / tab_size) + 1) * tab_size;
+        terminal_cursor_move_to_tab(1);
       }
       return (State) &initial_state;
     
@@ -141,7 +141,7 @@ State control_sequence_entry(char c) {
     case 'Z':
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
-        current_cursor.x = ((current_cursor.x / tab_size) - 1) * tab_size;
+        terminal_cursor_move_to_tab(0);
       }
       return (State) &initial_state;
 

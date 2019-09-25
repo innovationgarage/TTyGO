@@ -23,6 +23,9 @@ const char CR = '\r', LF = '\n', VT = '\v', BS = '\b', FF = '\f', ESC = '\e', NU
 
 #define TERM(x, y) (terminal_buffer[(x - 1) + (y - 1)*terminal_width])
 
+#define BIT(arr, idx) ((arr[idx / 8] & (1 << (idx % 8))) >> (idx % 8))
+#define BIT_SET(arr, idx, val) (arr[idx / 8] = ((arr[idx / 8] & ~(1 << (idx % 8))) | (val << (idx % 8))))
+
 typedef struct {
   int x;
   int y;
@@ -32,6 +35,8 @@ typedef struct {
   int upper;
   int lower;
 } ScrollRegion;
+
+void terminal_cursor_move_to_tab(int next=1);
 
 void terminal_scroll(int start, int end, int up);
 void terminal_scroll_line(int y, int start, int end, int direction_left = 0);
@@ -50,7 +55,7 @@ void param_temp_buffer_eat(char c);
 // This is all set by the terminal_setup based on current font and display size
 extern ScrollRegion scroll_region;
 extern Cursor current_cursor, saved_cursor;
-extern int tab_size;
+extern unsigned char terminal_tab_stops[80/8];
 extern int char_height, char_width,
        terminal_width, terminal_height, display_height_offset, display_width_offset;
 // Just a maximum, scrolling is not implemented
