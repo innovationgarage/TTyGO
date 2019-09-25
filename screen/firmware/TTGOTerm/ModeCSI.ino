@@ -172,6 +172,7 @@ State control_sequence_entry(char c) {
       switch (control_sequence_param[0])
       {
         case 0:
+          Serial.print("\x1b[200~");
           for (int y = 1; y <= terminal_height; y++) {
             for (int x = 1; x <= terminal_width; x++) {
               if (TERM(x, y) != NUL) {
@@ -181,6 +182,8 @@ State control_sequence_entry(char c) {
             Serial.print("\n");
             Serial.flush();
           }
+          Serial.print("\x1b[201~");
+          Serial.flush();
       }
       return (State) &initial_state;
    

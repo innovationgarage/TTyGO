@@ -42,6 +42,7 @@ wr("\x1b[1A\x1b[1DOn the third line")
 
 wr("\x1b[2;2H")
 
+paste_mode = False
 pos = 2
 while True:
     c1 = rd()
@@ -51,23 +52,48 @@ while True:
         
         if c2 == "[":
             dbg("CSI")
-            c3 = rd()
-      
-            if c3 == "A":
-                dbg("CSI UP")
-                pos -= 1
-                wr("\x1b[2G ")
-                wr("\x1b[A\x1b[2GX")
-            elif c3 == "B":
-                dbg("CSI DOWN")
-                pos += 1
-                wr("\x1b[2G ")
-                wr("\x1b[B\x1b[2GX")
-            else:
-                dbg("Unknown CSI " + c3)
+
+            csiarg = ""
+            csiargs = []
+
+            def parsearg(dfl=None):
+                global csiarg, csiargs
+                if csiarg:
+                    csiargs.append(int(csiarg))
+                    csiarg = ""
+                else:
+                    csiargs.append(dfl)
+            
+            while True:
+                c3 = rd()
+
+                if c3 == "A":
+                    dbg("CSI UP")
+                    pos -= 1
+                    wr("\x1b[2G ")
+                    wr("\x1b[A\x1b[2GX")
+                    break
+                elif c3 == "B":
+                    dbg("CSI DOWN")
+                    pos += 1
+                    wr("\x1b[2G ")
+                    wr("\x1b[B\x1b[2GX")
+                    break
+                elif c3 == "~":
+                    parsearg()
+                    if csiargs[0] == 200:
+                        paste_mode = True
+                    if csiargs[0] == 201:
+                        paste_mode = False
+                    break
+                elif c3 == ";":
+                    parsearg()
+                else:
+                    csiarg += c3
+                    
         else:
             dbg("Unknown ESC " + c2)
-    elif c1 == "\n" or c1 == "\r":
+    elif not paste_mode and (c1 == "\n" or c1 == "\r"):
         dbg("ENTER")
         if pos == 6:
             dbg("PRINT SCREEN")
