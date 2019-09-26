@@ -52,3 +52,9 @@ class TestCSI(unittest.TestCase):
         o = strw(self.orig, 9, 3, "X").strip()
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_insert_blank(self):
+        wr("\x1b[1;1H\x1b[4@")
+        o = strw(self.orig, 1, 1, "    ").strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
