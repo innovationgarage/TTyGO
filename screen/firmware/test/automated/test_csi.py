@@ -2,17 +2,15 @@
 
 import sys
 import os
-import tty
-import termios
 import unittest
+import serial
 
-term = os.open(os.environ.get("TTGOTERM", "/dev/ttyUSB0"), os.O_RDWR)
+term = serial.Serial(os.environ.get("TTGOTERM", "/dev/ttyUSB0"), baudrate=int(os.environ.get("TTGOTERM_SPEED", 9600)), timeout=3.0)
 
-tty.setcbreak(term)
 def rd():
-    return os.read(term, 1)
+    return term.read(1)
 def wr(s):
-    os.write(term, s)
+    term.write(s)
 
 def strw(s, x, y, c):
     y -= 1
