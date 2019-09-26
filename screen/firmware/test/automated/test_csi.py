@@ -117,3 +117,21 @@ class TestCSI(unittest.TestCase):
         o = o.strip()
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_insert_lines(self):
+        wr("\x1b[3;9H\x1b[2LX")
+        lines = self.orig.split("\n")
+        o = "\n".join(lines[:2] + [" " * 32, " " * 32] + lines[2:])
+        o = strw(o, 9, 3, "X")
+        o = o.strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_delete_lines(self):
+        wr("\x1b[4;9HA\x1b[3;9HB\x1b[1MX")
+        lines = self.orig.split("\n")
+        o = "\n".join(lines[:2] + lines[3:])
+        o = strw(o, 9, 3, "X")
+        o = o.strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
