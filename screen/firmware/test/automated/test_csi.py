@@ -46,6 +46,13 @@ class TestCSI(unittest.TestCase):
         o = strw(self.orig, 4, 4, "X").strip()
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_cursor_next_prev_line(self):
+        wr("\x1b[3;9H\x1b[1EX")
+        wr("\x1b[3;9H\x1b[1FY")
+        o = strw(strw(self.orig, 1, 4, "X"), 1, 2, "Y").strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
         
     def test_cursor_absolute(self):
         wr("\x1b[3;9HX")
