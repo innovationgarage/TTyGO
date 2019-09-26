@@ -35,7 +35,7 @@ void terminal_scroll(int start, int end, int up) {
       }
     }
   } else {
-    for (int y = bottom; y >= bottom; y--) {
+    for (int y = bottom; y >= top; y--) {
       for (int x = 1; x <= terminal_width; x++) {
         TERM(x, y) = TERM(x, y - 1);
       }
