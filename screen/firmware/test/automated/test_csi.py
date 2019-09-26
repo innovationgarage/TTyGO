@@ -36,6 +36,8 @@ class TestCSI(unittest.TestCase):
 4                              |
 +------------------------------+
 """
+
+    linelen = len(orig.split("\n")[0])
     
     def setUp(self):
         wr("\x1bc")
@@ -92,7 +94,7 @@ class TestCSI(unittest.TestCase):
 
     def test_clear_to_end_of_line(self):
         wr("\x1b[3;9HY\x1b[3;8H\x1b[0KX")
-        o = strw(self.orig, 22, 3, " ")
+        o = strw(self.orig, self.linelen, 3, " ")
         o = strw(o, 9, 3, " ")
         o = strw(o, 8, 3, "X").strip()
         o = o.strip()
@@ -111,7 +113,7 @@ class TestCSI(unittest.TestCase):
     def test_clear_line(self):
         wr("\x1b[3;8HX\x1b[2KX")
         o = strw(self.orig, 1, 3, " ")
-        o = strw(o, 22, 3, " ")
+        o = strw(o, self.linelen, 3, " ")
         o = strw(o, 8, 3, " ")
         o = strw(o, 9, 3, "X").strip()
         o = o.strip()
@@ -121,7 +123,7 @@ class TestCSI(unittest.TestCase):
     def test_insert_lines(self):
         wr("\x1b[3;9H\x1b[2LX")
         lines = self.orig.split("\n")
-        o = "\n".join(lines[:2] + [" " * 32, " " * 32] + lines[2:])
+        o = "\n".join(lines[:2] + [" " * self.linelen, " " * self.linelen] + lines[2:])
         o = strw(o, 9, 3, "X")
         o = o.strip()
         r = readscreen().strip()
@@ -142,7 +144,7 @@ class TestCSI(unittest.TestCase):
         o = "\n".join(lines[:2] + lines[3:])
         o = strw(self.orig, 9, 3, "XD")
         o = strw(o, 30, 3, "|")
-        o = strw(o, 32, 3, " ")
+        o = strw(o, self.linelen, 3, " ")
         o = o.strip()
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
