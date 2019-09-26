@@ -138,11 +138,13 @@ void terminal_put(char c)
       terminal_buffer[(current_cursor.x - 1) + (current_cursor.y - 1)*terminal_width] = c; // Put the char and advance
       ++current_cursor.x;
   }
-  if (current_cursor.x >= 80) {
+  if (current_cursor.x > terminal_width) {
     current_cursor.x = 1;
     current_cursor.y++;
   }
-  if (current_cursor.y >= 80) {
-    current_cursor.y = 1; // Fuck off, we said no scrolling, right? Just don't crash
+  if (current_cursor.y > scroll_region.lower) {
+    current_cursor.y = scroll_region.lower;
+    terminal_scroll(0, scroll_region.lower, 1);
+    terminal_clear_line(0, scroll_region.lower, 2);    
   }
 }
