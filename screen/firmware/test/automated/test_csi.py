@@ -41,6 +41,12 @@ class TestCSI(unittest.TestCase):
         wr("\x1bc")
         wr(self.orig)
 
+    def test_insert_blank(self):
+        wr("\x1b[1;1H\x1b[4@")
+        o = strw(self.orig, 1, 1, "    ").strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
     def test_cursor_relative(self):
         wr("\x1b[2;2H\x1b[3B\x1b[1A\x1b[3C\x1b[1DX")
         o = strw(self.orig, 4, 4, "X").strip()
@@ -54,14 +60,14 @@ class TestCSI(unittest.TestCase):
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
         
+    def test_cursor_char_absolute(self):
+        wr("\x1b[3;9H\x1b[4GX")
+        o = strw(self.orig, 4, 3, "X").strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+        
     def test_cursor_absolute(self):
         wr("\x1b[3;9HX")
         o = strw(self.orig, 9, 3, "X").strip()
-        r = readscreen().strip()
-        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
-
-    def test_insert_blank(self):
-        wr("\x1b[1;1H\x1b[4@")
-        o = strw(self.orig, 1, 1, "    ").strip()
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
