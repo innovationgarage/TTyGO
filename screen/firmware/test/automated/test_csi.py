@@ -170,3 +170,10 @@ class TestCSI(unittest.TestCase):
         o = o.strip()
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_cursor_tab_backward(self):
+        wr("\x1b[3;17HA\x1b[1ZB")
+        o = strw(self.orig, 17, 3, "A")
+        o = strw(o, 9, 3, "B").strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
