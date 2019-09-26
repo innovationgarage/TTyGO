@@ -135,3 +135,30 @@ class TestCSI(unittest.TestCase):
         o = o.strip()
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_delete_characters(self):
+        wr("\x1b[3;9HABCD\x1b[3;9H\x1b[2PX")
+        lines = self.orig.split("\n")
+        o = "\n".join(lines[:2] + lines[3:])
+        o = strw(self.orig, 9, 3, "XD")
+        o = strw(o, 30, 3, "|")
+        o = strw(o, 32, 3, " ")
+        o = o.strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_scroll_up(self):
+        wr("\x1b[2S")
+        lines = self.orig.strip().split("\n")
+        o = "\n".join(lines[2:])
+        o = o.strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_scroll_down(self):
+        wr("\x1b[2T")
+        lines = self.orig.strip().split("\n")
+        o = "\n".join(lines[:-2])
+        o = o.strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
