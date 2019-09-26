@@ -176,3 +176,9 @@ class TestCSI(unittest.TestCase):
         o = strw(o, 9, 3, "B")
         r = readscreen()
         self.assertScreen(o, r)
+
+    def test_repeat_character(self):
+        wr("\x1b[3;9HAB\x1b[5bC")
+        o = strw(self.orig, 9, 3, "ABBBBBB")
+        r = readscreen()
+        self.assertScreen(o, r)
