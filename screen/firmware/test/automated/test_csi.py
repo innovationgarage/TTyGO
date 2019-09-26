@@ -162,3 +162,11 @@ class TestCSI(unittest.TestCase):
         o = o.strip()
         r = readscreen().strip()
         self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
+
+    def test_erase_character(self):
+        wr("\x1b[3;8HABCD\x1b[3;8H\x1b[3XY")
+        o = strw(self.orig, 8, 3, "Y")
+        o = strw(o, 11, 3, "D")
+        o = o.strip()
+        r = readscreen().strip()
+        self.assertEqual(o, r, "\n%s\n!=\n%s" % (o, r))
