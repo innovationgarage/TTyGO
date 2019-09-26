@@ -4,8 +4,8 @@ void setup(void)
   Wire.begin(LCD_CLK, LCD_SDA);
   Serial.begin(9600);         // Start the serial port.
 
-  Scheduler.start(&terminal_task);
-  Scheduler.start(&keyboard_task);
   Scheduler.start(&screen_task);
+  Scheduler.start(&keyboard_task);
+  Scheduler.start(&terminal_task);
   Scheduler.begin();
 }
