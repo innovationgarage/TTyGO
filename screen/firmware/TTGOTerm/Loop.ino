@@ -4,6 +4,8 @@ void loop(void) {
   /* Nothing here, check Setup.ino */
 }
 
+char initial[] = "\x1bc\x1b[1;1HTTGOTerm v. 0.0.1\nVT220 for Arduino\nBy InnovationGarage AS\n";
+
 class TerminalTask : public Task {
   protected:
     void setup()
@@ -15,7 +17,9 @@ class TerminalTask : public Task {
         BIT_SET(terminal_tab_stops, i, 1);
       }
       
-      terminal_clear();
+      for (int i = 0; i < strlen(initial); i++) {
+        current_state = (State) current_state(initial[i]);
+      }
     }
 
     void loop()
