@@ -61,6 +61,8 @@ extern int char_height, char_width,
 // Just a maximum, scrolling is not implemented
 extern char terminal_buffer[80 * 80];
 
+extern int newline_eating_mode;
+
 // Control sequences and internal buffers
 const int param_temp_buffer_max = 8;
 char param_temp_buffer[param_temp_buffer_max];

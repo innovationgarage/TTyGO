@@ -3,6 +3,7 @@ State initial_state(char c) {
   {
   case ESC:
     if (debug_parsing) Serial.print("initial.ESC\n");
+    newline_eating_mode = 0;
     return (State) &command_mode;
   default:
 //    if (debug_parsing) { Serial.print("initial.CHAR"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }

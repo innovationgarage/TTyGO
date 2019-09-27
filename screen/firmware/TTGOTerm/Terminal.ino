@@ -126,21 +126,26 @@ void terminal_clear(int mode)
 }
 
 // Inserts a char into the char buffer
+int newline_eating_mode = 0;
 void terminal_put(char c)
 {
   switch (c)
   {
     case LF:
-      current_cursor.x = 1; current_cursor.y++; // Line feed
+      if (!newline_eating_mode) {
+        current_cursor.x = 1; current_cursor.y++; // Line feed
+      }
       break;
 
     default:
       terminal_buffer[(current_cursor.x - 1) + (current_cursor.y - 1)*terminal_width] = c; // Put the char and advance
       ++current_cursor.x;
   }
+  newline_eating_mode = 0;
   if (current_cursor.x > terminal_width) {
     current_cursor.x = 1;
     current_cursor.y++;
+    newline_eating_mode = 1;
   }
   if (current_cursor.y > scroll_region.lower) {
     current_cursor.y = scroll_region.lower;
