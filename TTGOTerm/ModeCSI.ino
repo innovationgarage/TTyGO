@@ -6,6 +6,8 @@ State control_sequence(char c) {
 }
 
 State control_sequence_entry(char c) {
+  char prevc;
+  
   switch (c)
   {
     case '-': case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': 
@@ -145,8 +147,10 @@ State control_sequence_entry(char c) {
 
     case 'b': // CSI Ps b Repeat the preceding character
       param_temp_buffer_digest(1);
+
+      prevc = TERM(current_cursor.x - 1, current_cursor.y);
       for (int i = 0; i < control_sequence_param[0]; i++) {
-        TERM(current_cursor.y, current_cursor.x + i) = TERM(current_cursor.y, current_cursor.x - 1);
+        terminal_put(prevc);
       }
       return (State) &initial_state;
 
