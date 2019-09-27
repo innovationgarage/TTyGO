@@ -145,7 +145,9 @@ State control_sequence_entry(char c) {
 
     case 'b': // CSI Ps b Repeat the preceding character
       param_temp_buffer_digest(1);
-      terminal_scroll_line(current_cursor.y, current_cursor.x-1, current_cursor.x+control_sequence_param[0]-1, 0);
+      for (int i = 0; i < control_sequence_param[0]; i++) {
+        TERM(current_cursor.y, current_cursor.x + i) = TERM(current_cursor.y, current_cursor.x - 1);
+      }
       return (State) &initial_state;
 
     case 'c': // CSI Ps c Send Device Attributes
@@ -214,18 +216,22 @@ State control_sequence_entry(char c) {
       param_temp_buffer_digest();
       switch (control_sequence_param[0])
       {
-        case 1:
-          switch (control_sequence_param[1])
-          {
-            case 8: // Report the size of the text area in characters as CSI 8 ; height ; width t
-            case 9: // Report the size of the screen in characters as CSI 9 ; height ; width t
-              Serial.print("[");
-              Serial.print(terminal_height);
-              Serial.print(";");
-              Serial.print(terminal_width);
-              Serial.print("t");
-              Serial.flush();
-          }
+        case 18: // Report the size of the text area in characters as CSI 8 ; height ; width t
+          Serial.print("\x1b[8;");
+          Serial.print(terminal_height);
+          Serial.print(";");
+          Serial.print(terminal_width);
+          Serial.print("t");
+          Serial.flush();
+          break;
+        case 19: // Report the size of the screen in characters as CSI 9 ; height ; width t
+          Serial.print("\x1b[9;");
+          Serial.print(terminal_height);
+          Serial.print(";");
+          Serial.print(terminal_width);
+          Serial.print("t");
+          Serial.flush();
+          break;
       }
       return (State) &initial_state;
 
