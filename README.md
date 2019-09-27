@@ -4,6 +4,8 @@ Implements a simple ANSI escape code terminal interpreter using TTGO OLED ESP862
 
 Uses U8g2lib graphical library, so it is compatible with a lot of displays https://github.com/olikraus/u8g2/wiki
 
+[![Screenshot](images/screenshot-menu.jpg)](http://www.youtube.com/watch?v=VxAwc2s-E1o)
+
 ## Required libraries
 
 From the Arduino library manager:
