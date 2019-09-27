@@ -170,11 +170,25 @@ State control_sequence_entry(char c) {
       current_cursor.x = control_sequence_param[1];
       return (State) &initial_state;
 
-    // MISSING: CSI P s g Tab Clear (TBC)
-    // MISSING: CSI P m h Set Mode (SM)
-    // MISSING: CSI ? P m h DEC Private Mode Set (DECSET)
+    case 'g': // CSI Ps g Tab Clear (TBC)
+      param_temp_buffer_digest(0);
+      switch (control_sequence_param[0])
+      {
+        case 0:
+          BIT_SET(terminal_tab_stops, current_cursor.x, 0);
+          break;
+        case 3:
+          for (int x = 1; x <= terminal_width; x++) {
+            BIT_SET(terminal_tab_stops, x, 0);
+          }
+          break;
+      }
+      return (State) &initial_state;
+
+    // MISSING: CSI Pm h Set Mode (SM)
+    // MISSING: CSI ? Pm h DEC Private Mode Set (DECSET)
     
-    case 'i': // CSI P m i Media Copy (MC)
+    case 'i': // CSI Pm i Media Copy (MC)
       param_temp_buffer_digest(0);
 
       

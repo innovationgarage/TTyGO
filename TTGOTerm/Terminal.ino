@@ -131,22 +131,16 @@ void terminal_put(char c)
 {
   switch (c)
   {
-    case BS:
-      if (current_cursor.x == 1) {
-        current_cursor.y--;
-        if (current_cursor.y < 1) current_cursor.y = 1;
-        for (current_cursor.x = terminal_width;
-             current_cursor.x > 1
-             && (   TERM(current_cursor.x, current_cursor.y) == ' '
-                 || TERM(current_cursor.x, current_cursor.y) == NUL);
-             current_cursor.x--);
-      } else {
+    case '\b': // BS  (backspace)
+      if (current_cursor.x > 1) {
         current_cursor.x -= 1;
       }
       TERM(current_cursor.x, current_cursor.y) = ' ';
       break;
-      
-    case LF:
+   
+    case '\x0c': // FF  (NP form feed, new page)
+    case '\x0a': // LF  (NL line feed, new line)
+    case '\x0b': // VT  (vertical tab)
       if (!newline_eating_mode) {
         current_cursor.x = 1; current_cursor.y++; // Line feed
       }
