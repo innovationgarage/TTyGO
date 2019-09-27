@@ -131,6 +131,21 @@ void terminal_put(char c)
 {
   switch (c)
   {
+    case BS:
+      if (current_cursor.x == 1) {
+        current_cursor.y--;
+        if (current_cursor.y < 1) current_cursor.y = 1;
+        for (current_cursor.x = terminal_width;
+             current_cursor.x > 1
+             && (   TERM(current_cursor.x, current_cursor.y) == ' '
+                 || TERM(current_cursor.x, current_cursor.y) == NUL);
+             current_cursor.x--);
+      } else {
+        current_cursor.x -= 1;
+      }
+      TERM(current_cursor.x, current_cursor.y) = ' ';
+      break;
+      
     case LF:
       if (!newline_eating_mode) {
         current_cursor.x = 1; current_cursor.y++; // Line feed
