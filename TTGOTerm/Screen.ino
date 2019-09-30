@@ -7,9 +7,13 @@ void terminal_draw()
   for (int x = 1; x <= terminal_width; x++)
     for (int y = 1; y <= terminal_height; y++)
     {
-      char c = TERM(x, y);
       terminal_setcursor(x, y);
-      u8g2.print(c);
+      u8g2.print(TERM(x, y).a);
+      #ifdef WIDECHAR
+      if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b); 
+      if (TERM(x, y).c != NUL) u8g2.print(TERM(x, y).c);
+      if (TERM(x, y).d != NUL) u8g2.print(TERM(x, y).d);
+      #endif
     }
   u8g2.sendBuffer();
 }
@@ -20,6 +24,7 @@ class ScreenTask : public Task {
     {
       // init display
       u8g2.begin();
+      u8g2.enableUTF8Print();
       u8g2.setFont(lcd_font);
 
       char_height = u8g2.getMaxCharHeight();

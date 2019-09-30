@@ -6,7 +6,7 @@ State control_sequence(char c) {
 }
 
 State control_sequence_entry(char c) {
-  char prevc;
+  Glyph prevc;
   
   switch (c)
   {
@@ -105,7 +105,7 @@ State control_sequence_entry(char c) {
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_scroll_line(current_cursor.y, current_cursor.x, terminal_width, 1);
-        TERM(terminal_width, current_cursor.y) = ' ';
+        TERM(terminal_width, current_cursor.y) = {' '};
       }
       return (State) &initial_state;
 
@@ -130,7 +130,7 @@ State control_sequence_entry(char c) {
     case 'X': // CSI Ps X Erase Characters
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
-        TERM(current_cursor.x + i, current_cursor.y) = ' ';
+        TERM(current_cursor.x + i, current_cursor.y) = {' '};
       }
       return (State) &initial_state;
 
@@ -150,7 +150,7 @@ State control_sequence_entry(char c) {
 
       prevc = TERM(current_cursor.x - 1, current_cursor.y);
       for (int i = 0; i < control_sequence_param[0]; i++) {
-        terminal_put(prevc);
+        terminal_put_glyph(prevc);
       }
       return (State) &initial_state;
 
@@ -202,8 +202,14 @@ State control_sequence_entry(char c) {
           Serial.print("\x1b[200~");
           for (int y = 1; y <= terminal_height; y++) {
             for (int x = 1; x <= terminal_width; x++) {
-              if (TERM(x, y) != NUL) {
-                Serial.print(TERM(x, y));
+              if (TERM(x, y).a != NUL) {
+                // Should abstract this into a serial_print_glyph() functions...
+                Serial.print(TERM(x, y).a);
+                #ifdef WIDECHAR
+                if (TERM(x, y).b != NUL) Serial.print(TERM(x, y).b);
+                if (TERM(x, y).c != NUL) Serial.print(TERM(x, y).c);
+                if (TERM(x, y).d != NUL) Serial.print(TERM(x, y).d);
+                #endif
               }
             }
             Serial.print("\n");

@@ -10,7 +10,7 @@ unsigned char terminal_tab_stops[80/8];
 ScrollRegion scroll_region;
 int char_height, char_width,
     terminal_width, terminal_height, display_height_offset, display_width_offset; // This is all set by the terminal_setup based on current font and display size
-char terminal_buffer[80 * 80]; // Just a maximum, scrolling is not implemented
+Glyph terminal_buffer[80 * 80]; // Just a maximum, scrolling is not implemented
 
 void terminal_cursor_move_to_tab(int next) {
   if (next) {
@@ -63,17 +63,17 @@ void terminal_clear_line(int x, int y, int mode) {
   {
     case 0:
       for (int i = x; i <= terminal_width; i++) {
-        TERM(i, y) = ' ';
+        TERM(i, y) = {' '};
       }
       break;
     case 1:
       for (int i = 1; i <= x; i++) {
-        TERM(i, y) = ' ';
+        TERM(i, y) = {' '};
       }
       break;
     case 2:
       for (int i = 1; i <= terminal_width; i++) {
-        TERM(i, y) = ' ';
+        TERM(i, y) = {' '};
       }
       break;
   }
@@ -113,7 +113,7 @@ void terminal_clear(int mode)
     }
 
     if (should_clear_next)
-      terminal_buffer[i] = NUL;
+      terminal_buffer[i] = {NUL};
   }
 
   if (mode >= 2) // Reposition cursor to the top left
@@ -123,6 +123,20 @@ void terminal_clear(int mode)
   }
 
   terminal_draw();
+}
+
+void handle_scroll() {
+  newline_eating_mode = 0;
+  if (current_cursor.x > terminal_width) {
+    current_cursor.x = 1;
+    current_cursor.y++;
+    newline_eating_mode = 1;
+  }
+  if (current_cursor.y > scroll_region.lower) {
+    current_cursor.y = scroll_region.lower;
+    terminal_scroll(0, scroll_region.lower, 1);
+    terminal_clear_line(0, scroll_region.lower, 2);    
+  }
 }
 
 // Inserts a char into the char buffer
@@ -135,7 +149,7 @@ void terminal_put(char c)
       if (current_cursor.x > 1) {
         current_cursor.x -= 1;
       }
-      TERM(current_cursor.x, current_cursor.y) = ' ';
+      TERM(current_cursor.x, current_cursor.y) = {' '};
       break;
    
     case '\x0c': // FF  (NP form feed, new page)
@@ -147,18 +161,14 @@ void terminal_put(char c)
       break;
 
     default:
-      terminal_buffer[(current_cursor.x - 1) + (current_cursor.y - 1)*terminal_width] = c; // Put the char and advance
+      TERM(current_cursor.x, current_cursor.y) = {c}; // Put the char and advance
       ++current_cursor.x;
   }
-  newline_eating_mode = 0;
-  if (current_cursor.x > terminal_width) {
-    current_cursor.x = 1;
-    current_cursor.y++;
-    newline_eating_mode = 1;
-  }
-  if (current_cursor.y > scroll_region.lower) {
-    current_cursor.y = scroll_region.lower;
-    terminal_scroll(0, scroll_region.lower, 1);
-    terminal_clear_line(0, scroll_region.lower, 2);    
-  }
+  handle_scroll();
+}
+
+void terminal_put_glyph(Glyph g) {
+  TERM(current_cursor.x, current_cursor.y) = g;
+  ++current_cursor.x;
+  handle_scroll();
 }

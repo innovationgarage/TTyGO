@@ -1,3 +1,12 @@
+/* Build configuration */
+
+// Support UTF-8 codepoints (otherwise ASCII)
+#define WIDECHAR 1
+
+/* End build configuration */
+
+#define VERSION "0.0.1"
+
 #include <U8g2lib.h>
 #include <Wire.h>
 #include "OneButton.h"
@@ -36,6 +45,15 @@ typedef struct {
   int lower;
 } ScrollRegion;
 
+typedef struct {
+  char a;
+  #ifdef WIDECHAR
+  char b;
+  char c;
+  char d;
+  #endif
+} Glyph;
+
 void terminal_cursor_move_to_tab(int next=1);
 
 void terminal_scroll(int start, int end, int up);
@@ -49,6 +67,7 @@ void terminal_draw();
 void terminal_clear(int mode = 2);
 void terminal_setup();
 void terminal_put(char c);
+void terminal_put_glyph(Glyph g);
 void param_temp_buffer_digest(int default_value = 1);
 void param_temp_buffer_eat(char c);
 
@@ -59,7 +78,7 @@ extern unsigned char terminal_tab_stops[80/8];
 extern int char_height, char_width,
        terminal_width, terminal_height, display_height_offset, display_width_offset;
 // Just a maximum, scrolling is not implemented
-extern char terminal_buffer[80 * 80];
+extern Glyph terminal_buffer[80 * 80];
 
 extern int newline_eating_mode;
 
@@ -82,3 +101,6 @@ State initial_state(char c);
 State command_mode(char c);
 State control_sequence(char c);
 State control_sequence_entry(char c);
+
+
+char *dec_special_character_set(unsigned char c);
