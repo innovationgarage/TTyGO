@@ -203,13 +203,7 @@ State control_sequence_entry(char c) {
           for (int y = 1; y <= terminal_height; y++) {
             for (int x = 1; x <= terminal_width; x++) {
               if (TERM(x, y).a != NUL) {
-                // Should abstract this into a serial_print_glyph() functions...
-                Serial.print(TERM(x, y).a);
-                #ifdef WIDECHAR
-                if (TERM(x, y).b != NUL) Serial.print(TERM(x, y).b);
-                if (TERM(x, y).c != NUL) Serial.print(TERM(x, y).c);
-                if (TERM(x, y).d != NUL) Serial.print(TERM(x, y).d);
-                #endif
+                serial_print_glyph(TERM(x, y));
               }
             }
             Serial.print("\n");

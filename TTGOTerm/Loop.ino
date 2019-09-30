@@ -6,11 +6,13 @@ void loop(void) {
 
 #ifdef WIDECHAR
   #define WIDECHARSTR " w UTF-8"
+  #define BANNER "Powered by räksmörgås\n"
 #else
   #define WIDECHARSTR ""
+  #define BANNER ""
 #endif
 
-char initial[] = "\x1bc\x1b[1;1HTTGOTerm v. " VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n";
+char initial[] = "\x1bc\x1b[1;1HTTGOTerm v. " VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER;
 
 class TerminalTask : public Task {
   protected:

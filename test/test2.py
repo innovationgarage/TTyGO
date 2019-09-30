@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import tty
@@ -25,21 +27,24 @@ Reader().start()
 
 wr("\x1bc")
 
-wr("""\
-********************************
-*                              *
-*                              *
-*                              *
-*                              *
-********************************
-""")
+wr("Räksmörgås")
 
-wr("\x1b[5A\x1b[2COn the first line")
-wr("\x1b[1E\x1b[3GOn the second line")
-wr("\x1b[4;3HOn the muahahaha")
-wr("\x1b[1E\x1b[2COn the forth line")
-wr("\x1b[5;4H")
-wr("\x1b[1A\x1b[1DOn the third line")
-wr("\x1b[7;1H")
+# wr("""\
+# ********************************
+# *                              *
+# *                              *
+# *                              *
+# *                              *
+# * Räksmörgås                   *
+# ********************************
+# """)
 
-wr("\x1b[2;2H")
+# wr("\x1b[5A\x1b[2COn the first line")
+# wr("\x1b[1E\x1b[3GOn the second line")
+# wr("\x1b[4;3HOn the muahahaha")
+# wr("\x1b[1E\x1b[2COn the forth line")
+# wr("\x1b[5;4H")
+# wr("\x1b[1A\x1b[1DOn the third line")
+# wr("\x1b[7;1H")
+
+# wr("\x1b[2;2H")

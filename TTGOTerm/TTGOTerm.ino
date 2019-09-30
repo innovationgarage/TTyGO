@@ -98,9 +98,21 @@ typedef Function *(*State)(char c);
 const int debug_parsing = 0;
 
 State initial_state(char c);
+State parse_utf_8_sequence(char c);
 State command_mode(char c);
 State control_sequence(char c);
 State control_sequence_entry(char c);
 
 
 char *dec_special_character_set(unsigned char c);
+
+void serial_print_glyph(Glyph g);
+
+void serial_print_glyph(Glyph g) {
+  Serial.print(g.a);
+  #ifdef WIDECHAR
+  if (g.b != NUL) Serial.print(g.b);
+  if (g.c != NUL) Serial.print(g.c);
+  if (g.d != NUL) Serial.print(g.d);
+  #endif
+}
