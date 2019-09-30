@@ -1,4 +1,6 @@
 State initial_state(char c) {
+  char *conversion_str;
+
   switch (c)
   {
     // Single-character functions
@@ -15,10 +17,13 @@ State initial_state(char c) {
       terminal_cursor_move_to_tab(1);
       return (State) &initial_state;
 
-    // MISSING: case '\x0e': // SO  (shift out)
-    // MISSING: case '\x0f': // SI  (shift in)
-
+    case '\x0e': // SO  (shift out)
+      current_charset = 1;
       return (State) &initial_state;
+    case '\x0f': // SI  (shift in)
+      current_charset = 0;
+      return (State) &initial_state;
+      
     case ESC:
       if (debug_parsing) Serial.print("initial.ESC\n");
       newline_eating_mode = 0;
@@ -32,7 +37,23 @@ State initial_state(char c) {
       return (State) &initial_state;
 
     default:
-      return parse_utf_8_sequence(c);
+      switch (charsets[current_charset])
+      {
+        case '0':
+          for(conversion_str = dec_special_character_set(c); conversion_str && *conversion_str; conversion_str++) {
+            parse_utf_8_sequence(*conversion_str);
+          }
+          if (!conversion_str) {
+            parse_utf_8_sequence(c);
+          }
+          return (State) &initial_state;
+
+        // case '@': // Bzzt WRONG! For this we should do ISO 8859-1 translation, but we won't. Mwahahaha
+        // case 'G':
+        // case 'B':
+        default:
+          return parse_utf_8_sequence(c);
+      }
   }
 }
 

@@ -27,7 +27,10 @@ Reader().start()
 
 wr("\x1bc")
 
-wr("Räksmörgås")
+wr("\x1b(0\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78");
+wr("\x1b(Baaaaa");
+          
+# wr("Räksmörgås")
 
 # wr("""\
 # ********************************

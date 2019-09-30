@@ -35,12 +35,18 @@ State command_mode(char c) {
     // MISSING: ESC # 5 DEC single-width line (DECSWL)
     // MISSING: ESC # 6 DEC double-width line (DECDWL)
     // MISSING: ESC # 8 DEC Screen Alignment Test (DECALN)
-    // MISSING: ESC % @ Select default character set, ISO 8859-1 (ISO 2022)
-    // MISSING: ESC % G Select UTF-8 character set (ISO 2022)
-    // MISSING: ESC ( Ch Designate G0 Character Set (ISO 2022)
-    // MISSING: ESC ) Ch Designate G1 Character Set (ISO 2022)
-    // MISSING: ESC * Ch Designate G2 Character Set (ISO 2022)
-    // MISSING: ESC + Ch Designate G3 Character Set (ISO 2022)
+    
+    case '%': // ESC % @ Select default character set, ISO 8859-1 (ISO 2022)
+              // ESC % G Select UTF-8 character set (ISO 2022)
+      return (State) &designate_g0;
+    case '(': // ESC ( Ch Designate G0 Character Set (ISO 2022)
+      return (State) &designate_g0;
+    case ')': // ESC ) Ch Designate G1 Character Set (ISO 2022)
+      return (State) &designate_g1;
+    case '*': // ESC * Ch Designate G2 Character Set (ISO 2022)
+      return (State) &designate_g2;
+    case '+': // ESC + Ch Designate G3 Character Set (ISO 2022)
+      return (State) &designate_g3;
 
     case '7':// ESC 7 Save Cursor (DECSC)
       terminal_cursor_save();
@@ -76,3 +82,19 @@ State command_mode(char c) {
   }
 }
 
+State designate_g0(char c) {
+  charsets[0] = c;
+  return (State) &initial_state;
+}
+State designate_g1(char c) {
+  charsets[1] = c;
+  return (State) &initial_state;
+}
+State designate_g2(char c) {
+  charsets[2] = c;
+  return (State) &initial_state;
+}
+State designate_g3(char c) {
+  charsets[3] = c;
+  return (State) &initial_state;
+}

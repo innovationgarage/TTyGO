@@ -4,6 +4,8 @@
    Uses U8g2lib graphical library, so it is compatible with a lot of displays https://github.com/olikraus/u8g2/wiki
 */
 
+char charsets[4] = {'B','B','B','B'};
+char current_charset = 0;
 Cursor current_cursor, saved_cursor;
 unsigned char terminal_tab_stops[80/8];
 

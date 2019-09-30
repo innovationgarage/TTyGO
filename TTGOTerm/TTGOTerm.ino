@@ -3,15 +3,6 @@
 // Support UTF-8 codepoints (otherwise ASCII)
 #define WIDECHAR 1
 
-/* End build configuration */
-
-#define VERSION "0.0.1"
-
-#include <U8g2lib.h>
-#include <Wire.h>
-#include "OneButton.h"
-#include <Scheduler.h> // ESP8266Scheduler
-
 #define BTN_LEFT 12
 #define BTN_MID 14
 #define BTN_RIGHT 13
@@ -22,10 +13,19 @@
 
 #define SERIAL_BAUDS 9600
 
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
-
 // Font from https://github.com/olikraus/u8g2/wiki/fntlistall
 #define lcd_font u8g2_font_4x6_mf
+
+/* End build configuration */
+
+#define VERSION "0.0.1"
+
+#include <U8g2lib.h>
+#include <Wire.h>
+#include "OneButton.h"
+#include <Scheduler.h> // ESP8266Scheduler
+
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 // ASCII control characters recognised
 const char CR = '\r', LF = '\n', VT = '\v', BS = '\b', FF = '\f', ESC = '\e', NUL = '\0', CSI = '[';
@@ -71,6 +71,8 @@ void terminal_put_glyph(Glyph g);
 void param_temp_buffer_digest(int default_value = 1);
 void param_temp_buffer_eat(char c);
 
+extern char charsets[4];
+extern char current_charset;
 // This is all set by the terminal_setup based on current font and display size
 extern ScrollRegion scroll_region;
 extern Cursor current_cursor, saved_cursor;
@@ -100,6 +102,10 @@ const int debug_parsing = 0;
 State initial_state(char c);
 State parse_utf_8_sequence(char c);
 State command_mode(char c);
+State designate_g0(char c);
+State designate_g1(char c);
+State designate_g2(char c);
+State designate_g3(char c);
 State control_sequence(char c);
 State control_sequence_entry(char c);
 
