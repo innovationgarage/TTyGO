@@ -28,7 +28,7 @@ State control_sequence_entry(char c) {
       param_temp_buffer_digest(1);
 
       for (int i = 0; i < control_sequence_param[0]; i++) {
-        terminal_put(' ');
+        terminal_put_glyph({' '});
       }
       return (State) &initial_state;
 

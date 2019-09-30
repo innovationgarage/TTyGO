@@ -143,28 +143,19 @@ void handle_scroll() {
 
 // Inserts a char into the char buffer
 int newline_eating_mode = 0;
-void terminal_put(char c)
+void terminal_backspace()
 {
-  switch (c)
-  {
-    case '\b': // BS  (backspace)
-      if (current_cursor.x > 1) {
-        current_cursor.x -= 1;
-      }
-      TERM(current_cursor.x, current_cursor.y) = {' '};
-      break;
-   
-    case '\x0c': // FF  (NP form feed, new page)
-    case '\x0a': // LF  (NL line feed, new line)
-    case '\x0b': // VT  (vertical tab)
-      if (!newline_eating_mode) {
-        current_cursor.x = 1; current_cursor.y++; // Line feed
-      }
-      break;
+  if (current_cursor.x > 1) {
+    current_cursor.x -= 1;
+  }
+  TERM(current_cursor.x, current_cursor.y) = {' '};
+  handle_scroll();
+}
 
-    default:
-      TERM(current_cursor.x, current_cursor.y) = {c}; // Put the char and advance
-      ++current_cursor.x;
+void terminal_newline()
+{
+  if (!newline_eating_mode) {
+    current_cursor.x = 1; current_cursor.y++; // Line feed
   }
   handle_scroll();
 }
