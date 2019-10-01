@@ -9,10 +9,14 @@ void terminal_draw()
     {
       terminal_setcursor(x, y);
       u8g2.print(TERM(x, y).a);
-      #ifdef WIDECHAR
+      #if WIDECHAR > 1
       if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b); 
+      #if WIDECHAR > 2
       if (TERM(x, y).c != NUL) u8g2.print(TERM(x, y).c);
+      #if WIDECHAR > 3
       if (TERM(x, y).d != NUL) u8g2.print(TERM(x, y).d);
+      #endif
+      #endif
       #endif
     }
   u8g2.sendBuffer();
