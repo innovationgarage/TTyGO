@@ -4,7 +4,7 @@ int dcs_charpos;
 
 State device_control(char c)
 {
-  // Serial.print("DCS.start\n"); Serial.flush();
+  if (debug_parsing) { Serial.print(S("DCS.start\n")); Serial.flush(); }
   dcs_prev_char = NULL;
   dcs_btn = 0;
   dcs_charpos = 0;
@@ -13,7 +13,7 @@ State device_control(char c)
 
 State device_control_dummy_entry_1(char c)
 {
-  // Serial.print("DCS.dummy1\n"); Serial.flush();
+  if (debug_parsing) { Serial.print(S("DCS.dummy1\n")); Serial.flush(); }
   switch (c)
   {
     case '\x9c':
@@ -28,7 +28,7 @@ State device_control_dummy_entry_1(char c)
 
 State device_control_dummy_entry_2(char c)
 {
-  // Serial.print("DCS.dummy2\n"); Serial.flush();
+  if (debug_parsing) { Serial.print(S("DCS.dummy2\n")); Serial.flush(); }
   switch (c)
   {
     case '\x9c':
@@ -43,7 +43,7 @@ State device_control_dummy_entry_2(char c)
 
 State device_control_entry_btn(char c)
 {
-  // Serial.print("DCS.btn\n"); Serial.flush();
+  if (debug_parsing) { Serial.print(S("DCS.btn\n")); Serial.flush(); }
   switch (c)
   {
     case '\x9c':
@@ -71,18 +71,23 @@ char hexval(char c) {
 
 State device_control_entry_str(char c)
 {
-  // Serial.print("DCS.str\n"); Serial.flush();
+  if (debug_parsing) { Serial.print(S("DCS.str\n")); Serial.flush(); }
   switch (c)
   {
     case '\x9c':
-      Serial.print("Set button "); Serial.print(dcs_btn); Serial.print(" to >");
-      Serial.print(buttons[dcs_btn]); Serial.print("<\n"); Serial.flush();
+      if (debug_parsing)
+      {
+        Serial.print(S("Set button ")); Serial.print(dcs_btn); Serial.print(S(" to >"));
+        Serial.print(buttons[dcs_btn]); Serial.print(S("<\n")); Serial.flush();
+      }
       return (State) &initial_state;
 
     case ';':
-      Serial.print("Set button "); Serial.print(dcs_btn); Serial.print(" to >");
-      Serial.print(buttons[dcs_btn]); Serial.print("<\n"); Serial.flush();
-
+      if (debug_parsing)
+      {
+        Serial.print(S("Set button ")); Serial.print(dcs_btn); Serial.print(S(" to >"));
+        Serial.print(buttons[dcs_btn]); Serial.print(S("<\n")); Serial.flush();
+      }
       dcs_btn = 0;
       return (State) &device_control_entry_btn;
 

@@ -1,5 +1,5 @@
 State control_sequence(char c) {
-  if (debug_parsing) { Serial.print("CSI.start\n"); Serial.flush(); }
+  if (debug_parsing) { Serial.print(S("CSI.start\n")); Serial.flush(); }
   control_sequence_param_pos = 0;
   param_temp_buffer_pos = 0;
   return control_sequence_entry(c);
@@ -11,12 +11,12 @@ State control_sequence_entry(char c) {
   switch (c)
   {
     case '-': case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': 
-      if (debug_parsing) { Serial.print("CSI.param");  Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print(S("CSI.param"));  Serial.print((int)c); Serial.print(S("\n")); Serial.flush(); }
       param_temp_buffer_eat(c);
       return (State) &control_sequence_entry;
 
     case ';':
-      if (debug_parsing) { Serial.print("CSI.newparam"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print(S("CSI.newparam")); Serial.print((int)c); Serial.print(S("\n")); Serial.flush(); }
       param_temp_buffer_digest(); // Prepares for next parameter... or control code
       return (State) &control_sequence_entry;
 
@@ -45,20 +45,20 @@ State control_sequence_entry(char c) {
     case 'F': // CSI Ps F Cursor Preceding Line
       param_temp_buffer_digest();
 
-      if (debug_parsing) { Serial.print("CSI.EF"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print(S("CSI.EF")); Serial.print((int)c); Serial.print(S("\n")); Serial.flush(); }
       current_cursor.x = 1;
       current_cursor.y += (c == 'E' ? 1 : -1) * control_sequence_param[0];
       return (State) &initial_state;
 
     case 'G': // CSI Ps G Cursor Character Absolute
       param_temp_buffer_digest();
-      if (debug_parsing) { Serial.print("CSI.character_absolute"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print(S("CSI.character_absolute")); Serial.print((int)c); Serial.print(S("\n")); Serial.flush(); }
       current_cursor.x = control_sequence_param[0];
       return (State) &initial_state;
 
     case 'H': // CSI Ps ; Ps H Cursor Position
       param_temp_buffer_digest();
-      if (debug_parsing) { Serial.print("CSI.H\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print(S("CSI.H\n")); Serial.flush(); }
       current_cursor.y =  control_sequence_param[0];
       current_cursor.x = control_sequence_param_pos >= 1 ? control_sequence_param[1] : 1;
       return (State) &initial_state;
@@ -71,7 +71,7 @@ State control_sequence_entry(char c) {
       return (State) &initial_state;
     
     case 'J': // CSI Ps J Erase in Display
-      if (debug_parsing) Serial.print("CSI.J\n");
+      if (debug_parsing) Serial.print(S("CSI.J\n"));
       param_temp_buffer_digest(0);
       terminal_clear(control_sequence_param[0]);
       return (State) &initial_state;
@@ -156,7 +156,7 @@ State control_sequence_entry(char c) {
 
     case 'c': // CSI Ps c Send Device Attributes
       // Tell the user we're a VT220 with a printer (our wifi?) and no extra features...
-      Serial.print("\x1b[?60;2;c");
+      Serial.print(S("\x1b[?60;2;c"));
       Serial.flush();
 
       return (State) &initial_state;
@@ -199,17 +199,17 @@ State control_sequence_entry(char c) {
       switch (control_sequence_param[0])
       {
         case 0:
-          Serial.print("\x1b[200~");
+          Serial.print(S("\x1b[200~"));
           for (int y = 1; y <= terminal_height; y++) {
             for (int x = 1; x <= terminal_width; x++) {
               if (TERM(x, y).a != NUL) {
                 serial_print_glyph(TERM(x, y));
               }
             }
-            Serial.print("\n");
+            Serial.print(S("\n"));
             Serial.flush();
           }
-          Serial.print("\x1b[201~");
+          Serial.print(S("\x1b[201~"));
           Serial.flush();
       }
       return (State) &initial_state;
@@ -230,24 +230,24 @@ State control_sequence_entry(char c) {
     // MISSING: CSI ? P m s Save DEC Private Mode Values.
     
     case 't': // CSI P s ; P s ; P s t Window manipulation - Other control seqs https://www.xfree86.org/current/ctlseqs.html
-      if (debug_parsing) Serial.print("CSI.P\n");
+      if (debug_parsing) Serial.print(S("CSI.P\n"));
       param_temp_buffer_digest();
       switch (control_sequence_param[0])
       {
         case 18: // Report the size of the text area in characters as CSI 8 ; height ; width t
-          Serial.print("\x1b[8;");
+          Serial.print(S("\x1b[8;"));
           Serial.print(terminal_height);
-          Serial.print(";");
+          Serial.print(S(";"));
           Serial.print(terminal_width);
-          Serial.print("t");
+          Serial.print(S("t"));
           Serial.flush();
           break;
         case 19: // Report the size of the screen in characters as CSI 9 ; height ; width t
-          Serial.print("\x1b[9;");
+          Serial.print(S("\x1b[9;"));
           Serial.print(terminal_height);
-          Serial.print(";");
+          Serial.print(S(";"));
           Serial.print(terminal_width);
-          Serial.print("t");
+          Serial.print(S("t"));
           Serial.flush();
           break;
       }

@@ -6,6 +6,12 @@
 #include "OneButton.h"
 #include <Scheduler.h> // ESP8266Scheduler
 
+#ifdef FLASH_STRINGS
+  #define S(s) F(s)
+#else
+  #define S(s) s
+#endif
+
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 // ASCII control characters recognised

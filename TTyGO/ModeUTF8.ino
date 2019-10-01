@@ -2,14 +2,18 @@
 int glyphpos = 0;
 Glyph current_glyph = {};
 State parse_utf_8_sequence(char c) {
-  // Serial.print("UTF-8 "); Serial.print((int) c); Serial.print("@"); Serial.print(glyphpos); Serial.print(": "); Serial.print(" ");
+  if (debug_parsing)
+  {
+    Serial.print(S("UTF-8 ")); Serial.print((int) c); Serial.print(S("@"));
+    Serial.print(glyphpos); Serial.print(S(": ")); Serial.print(S(" "));
+  }
   if (!(c & 0b10000000)) { // Not continuation nor start of multibyte-glyph
     if (glyphpos == 0) {
-      //Serial.print("SINGLECHAR NEW >"); serial_print_glyph({c}); Serial.print("<\n");
+      if (debug_parsing) { Serial.print(S("SINGLECHAR NEW >")); serial_print_glyph({c}); Serial.print(S("<\n")); Serial.flush(); }
       terminal_put_glyph({c});
       return (State) &initial_state;
     } else {
-      //Serial.print("SINGLECHAR GLYPH >"); serial_print_glyph(current_glyph); Serial.print("<\n");
+      if (debug_parsing) { Serial.print(S("SINGLECHAR GLYPH >")); serial_print_glyph(current_glyph); Serial.print(S("<\n")); Serial.flush(); }
       terminal_put_glyph(current_glyph);
       glyphpos = 0;
       current_glyph = {};
@@ -17,14 +21,14 @@ State parse_utf_8_sequence(char c) {
     }
   }
   if (glyphpos > 3 || (((c & 0b11000000) == 0b11000000) && (glyphpos != 0))) { // Start of new multibyte-glyph
-    //Serial.print("NEWMULTI GLYPH >"); serial_print_glyph(current_glyph); Serial.print("<\n");
+    if (debug_parsing) { Serial.print(S("NEWMULTI GLYPH >")); serial_print_glyph(current_glyph); Serial.print(S("<\n")); Serial.flush(); }
     terminal_put_glyph(current_glyph);
     glyphpos = 0;
     current_glyph = {};
     return initial_state(c);
   }
 
-  // Serial.print("CONT\n");
+  if (debug_parsing) { Serial.print(S("CONT\n")); Serial.flush(); }
 
   switch (glyphpos)
   {

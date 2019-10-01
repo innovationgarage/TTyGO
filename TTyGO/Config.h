@@ -14,6 +14,9 @@
 
 // Software feature configuration
 
+// Store strings constants in flash rather than RAM
+#define FLASH_STRINGS 1
+
 // Length of UTF-8 multi-byte sequences to support. If 1, only ASCII
 // is supported. Max is 4.
 // Note that font support for your codepoints is also required!

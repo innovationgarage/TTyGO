@@ -20,7 +20,7 @@ State command_mode(char c) {
     // MISSING: ESC Z Return Terminal ID (DECID is 0x9a). Obsolete form of CSI c (DA).
     
     case CSI: // ESC [ Control Sequence Introducer ( CSI is 0x9b)
-      if (debug_parsing) { Serial.print("command.CSI\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print(S("command.CSI\n")); Serial.flush(); }
       return (State) &control_sequence;
     
     // MISSING: ESC \ String Terminator ( ST is 0x9c)
@@ -66,7 +66,7 @@ State command_mode(char c) {
       return (State) &initial_state;
     
     case 'c': // ESC c Full Reset (RIS)
-      if (debug_parsing) { Serial.print("command.RESET\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print(S("command.RESET\n")); Serial.flush(); }
       terminal_clear();
       return (State) &initial_state;
 
@@ -79,7 +79,7 @@ State command_mode(char c) {
     // MISSING: ESC ~ Invoke the G1 Character Set as GR (LS1R).
     
     default:
-      if (debug_parsing) { Serial.print("command.ERROR"); Serial.print((int)c); Serial.print("\n"); Serial.flush(); }
+      if (debug_parsing) { Serial.print(S("command.ERROR")); Serial.print((int)c); Serial.print(S("\n")); Serial.flush(); }
       return (State) &initial_state;
   }
 }

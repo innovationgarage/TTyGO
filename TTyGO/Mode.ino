@@ -11,7 +11,7 @@ State initial_state(char c) {
       current_cursor.x = 1;
       return (State) &initial_state;
     case '\x5': // ENQ (enquiry)
-      Serial.print("TTyGO v.0.0.1");
+      Serial.print(S("TTyGO v.0.0.1"));
       return (State) &initial_state;
     case '\x9': // TAB (horizontal tab)
       terminal_cursor_move_to_tab(1);
@@ -25,7 +25,7 @@ State initial_state(char c) {
       return (State) &initial_state;
       
     case ESC:
-      if (debug_parsing) Serial.print("initial.ESC\n");
+      if (debug_parsing) { Serial.print(S("initial.ESC\n")); Serial.flush(); }
       newline_eating_mode = 0;
       return (State) &command_mode;
 
