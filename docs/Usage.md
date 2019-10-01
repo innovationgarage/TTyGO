@@ -16,10 +16,12 @@ which should work pretty well for a lot of menu applications.
 # Print screen
 
 CSI 0 i (Media copy) will send the screen content back over the serial
-line, bracketed in paste mode CSI 200 ~ and CSI 201 ~. Note: Lines are
-truncated after the last printable non-empty character on the line. By
-definition, only printable characters and newline will be sent back -
-tab etc will have already been converted to spaces.
+line, bracketed in [paste
+mode](https://www.xfree86.org/current/ctlseqs.html#Bracketed%20Paste%20Mode)
+CSI 200 ~ and CSI 201 ~. Note: Lines are truncated after the last
+printable non-empty character on the line. By definition, only
+printable characters and newline will be sent back - tab etc will have
+already been converted to spaces.
 
 This is effectively a memory dump of the terminal buffer. It is used
 in the unit tests (tests/automated), but can be used in applications
@@ -29,11 +31,13 @@ as well - it is not intended to be an internal only function.
 
 There is no Latin-1 / ISO 8859 support - the terminal will happily
 accept you switching to e.g. swedish character encoding, but will
-still only ever interpret non-ascii characters as UTF-8 (or Dec
-Special Character Set).
+still only ever interpret non-ascii characters as UTF-8 (or [Dec
+Special Character
+Set](http://fileformats.archiveteam.org/wiki/DEC_Special_Graphics_Character_Set)).
 
 # Screen size
 
 The screen size is rarely 80x24 characters. The current screen size
-can be queried CSI 18 t, which will be replied to with CSI 8; height;
-width t.
+can be queried [CSI 18
+t](https://www.xfree86.org/current/ctlseqs.html#VT100%20Mode), which
+will be replied to with CSI 8; height; width t.
