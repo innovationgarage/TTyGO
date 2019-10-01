@@ -42,6 +42,6 @@
   #define BANNER ""
 #endif
 
-#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTGOTerm v. " VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
+#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
 
 /* End build configuration */
