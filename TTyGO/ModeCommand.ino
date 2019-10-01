@@ -67,6 +67,7 @@ State command_mode(char c) {
     
     case 'c': // ESC c Full Reset (RIS)
       if (debug_parsing) { Serial.print(S("command.RESET\n")); Serial.flush(); }
+      reset_buttons();
       terminal_clear();
       return (State) &initial_state;
 

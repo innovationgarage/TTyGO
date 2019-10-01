@@ -110,6 +110,12 @@ char *dec_special_character_set(unsigned char c);
 
 void serial_print_glyph(Glyph g);
 
+void reset_buttons();
+void reset_button(int i);
+
+
+
+
 void serial_print_glyph(Glyph g) {
   Serial.print(g.a);
   #if WIDECHAR > 1
