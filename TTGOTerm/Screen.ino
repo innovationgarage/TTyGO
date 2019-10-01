@@ -1,3 +1,4 @@
+#include "fonts/orp-medium.h"
 bool lcd_dirty = true; // invoke a redraw
 
 // Draws terminal to the lcd
@@ -9,11 +10,11 @@ void terminal_draw()
     {
       terminal_setcursor(x, y);
       u8g2.print(TERM(x, y).a);
-      #ifdef WIDECHAR
-      if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b); 
+#ifdef WIDECHAR
+      if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b);
       if (TERM(x, y).c != NUL) u8g2.print(TERM(x, y).c);
       if (TERM(x, y).d != NUL) u8g2.print(TERM(x, y).d);
-      #endif
+#endif
     }
   u8g2.sendBuffer();
 }
@@ -34,6 +35,18 @@ class ScreenTask : public Task {
       display_height_offset = (u8g2.getDisplayHeight() - (terminal_height * char_height)) / 2;
       display_width_offset = (u8g2.getDisplayWidth() - (terminal_width * char_width)) / 2;
       //u8g2.sendF("c", 0x0a7); // Invert display
+
+      // FONT TEST
+      u8g2.clearBuffer();
+      u8g2.setFont(bdf_font);
+      int f = 9509;
+      const int yd = 12;
+      for (int x = 0; x < 128; x += 6)
+        for (int y = yd; y < 64+yd; y += yd)
+          u8g2.drawGlyph(x, y, f++);
+      u8g2.setFont(lcd_font);
+      u8g2.sendBuffer();
+      delay(100000);
     }
 
     void loop() {
