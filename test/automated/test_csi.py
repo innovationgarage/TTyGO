@@ -1,4 +1,5 @@
 #! /usr/bin/python
+# -*- coding: utf-8 -*-
 
 import sys
 import os
@@ -180,5 +181,14 @@ class TestCSI(unittest.TestCase):
     def test_repeat_character(self):
         wr("\x1b[3;9HAB\x1b[5bC")
         o = strw(self.orig, 9, 3, "ABBBBBBC")
+        r = readscreen()
+        self.assertScreen(o, r)
+
+    def test_utf8(self):
+        wr("\x1b[2;2H          X")
+        wr("\x1b[2;2HRäksmörgås")
+        o = strw(self.orig, 2, 2, "RäksmörgåsX")
+        lines = o.split("\n")
+        o = "\n".join([lines[0], lines[1][:-1] + "   |"] + lines[2:]) # Work around UTF char len issue in strw :)
         r = readscreen()
         self.assertScreen(o, r)

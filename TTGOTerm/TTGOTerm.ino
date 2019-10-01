@@ -1,7 +1,9 @@
 /* Build configuration */
 
-// Support UTF-8 codepoints (otherwise ASCII)
-#define WIDECHAR 1
+// Length of UTF-8 multi-byte sequences to support. If 1, only ASCII
+// is supported. Max is 4.
+// Note that font support for your codepoints is also required!
+#define WIDECHAR 2
 
 #define BTN_LEFT 12
 #define BTN_MID 14
@@ -47,10 +49,14 @@ typedef struct {
 
 typedef struct {
   char a;
-  #ifdef WIDECHAR
+  #if WIDECHAR > 1
   char b;
+  #if WIDECHAR > 2
   char c;
+  #if WIDECHAR > 3
   char d;
+  #endif
+  #endif
   #endif
 } Glyph;
 
@@ -117,9 +123,13 @@ void serial_print_glyph(Glyph g);
 
 void serial_print_glyph(Glyph g) {
   Serial.print(g.a);
-  #ifdef WIDECHAR
+  #if WIDECHAR > 1
   if (g.b != NUL) Serial.print(g.b);
+  #if WIDECHAR > 2
   if (g.c != NUL) Serial.print(g.c);
+  #if WIDECHAR > 3
   if (g.d != NUL) Serial.print(g.d);
+  #endif
+  #endif
   #endif
 }

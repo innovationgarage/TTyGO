@@ -1,4 +1,4 @@
-#ifdef WIDECHAR
+#if WIDECHAR > 1
 int glyphpos = 0;
 Glyph current_glyph = {};
 State parse_utf_8_sequence(char c) {
@@ -29,9 +29,15 @@ State parse_utf_8_sequence(char c) {
   switch (glyphpos)
   {
     case 0: current_glyph.a = c; break;
+    #if WIDECHAR > 1
     case 1: current_glyph.b = c; break;
+    #if WIDECHAR > 2
     case 2: current_glyph.c = c; break;
+    #if WIDECHAR > 3
     case 3: current_glyph.d = c; break;
+    #endif
+    #endif
+    #endif
   }
   glyphpos++;
 
