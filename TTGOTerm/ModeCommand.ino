@@ -11,7 +11,9 @@ State command_mode(char c) {
     // MISSING: ESC M Reverse Index ( RI is 0x8d)
     // MISSING: ESC N Single Shift Select of G2 Character Set ( SS2 is 0x8e): affects next character only
     // MISSING: ESC O Single Shift Select of G3 Character Set ( SS3 is 0x8f): affects next character only
-    // MISSING: ESC P Device Control String ( DCS is 0x90)
+    case 'P': // ESC P Device Control String ( DCS is 0x90)
+      return (State) &device_control;
+
     // MISSING: ESC V Start of Guarded Area ( SPA is 0x96)
     // MISSING: ESC W End of Guarded Area ( EPA is 0x97)
     // MISSING: ESC X Start of String ( SOS is 0x98)

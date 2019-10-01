@@ -1,7 +1,8 @@
 char *dec_special_character_set(unsigned char c) {
   // Map the DEC Special Graphics Character Set to UTF-8
   // Source of this mapping: http://fileformats.archiveteam.org/wiki/DEC_Special_Graphics_Character_Set
-  switch (c) {
+  switch (c)
+  {
     case '\x5f': return "\xc2\xa0"; // NO-BREAK SPACE'
     case '\x60': return "\xe2\x97\x86"; // BLACK DIAMOND'
     case '\x61': return "\xe2\x96\x92"; // MEDIUM SHADE'

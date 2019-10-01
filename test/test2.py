@@ -27,8 +27,14 @@ Reader().start()
 
 wr("\x1bc")
 
-wr("\x1b(0\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78");
-wr("\x1b(Baaaaa");
+wr("Hej")
+def hexify(s):
+    return "".join(hex(ord(i))[2:] for i in s.encode("utf-8"))
+wr("\x1bP0;0;0/%s;2/%s;4/%s\x9c" % (hexify(u"hejhop"), hexify(u"nana"), hexify(u"åä")))
+wr("Tryck på en knapp")
+
+#wr("\x1b(0\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78");
+#wr("\x1b(Baaaaa");
           
 # wr("Räksmörgås")
 

@@ -16,6 +16,8 @@
 // Font from https://github.com/olikraus/u8g2/wiki/fntlistall
 #define lcd_font u8g2_font_4x6_mf
 
+#define BUTTON_STRLEN 10
+
 /* End build configuration */
 
 #define VERSION "0.0.1"
@@ -109,6 +111,11 @@ State designate_g2(char c);
 State designate_g3(char c);
 State control_sequence(char c);
 State control_sequence_entry(char c);
+State device_control(char c);
+State device_control_dummy_entry_1(char c);
+State device_control_dummy_entry_2(char c);
+State device_control_entry_btn(char c);
+State device_control_entry_str(char c);
 
 
 char *dec_special_character_set(unsigned char c);
