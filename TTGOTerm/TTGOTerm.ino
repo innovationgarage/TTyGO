@@ -1,32 +1,6 @@
-/* Build configuration */
-
-// Length of UTF-8 multi-byte sequences to support. If 1, only ASCII
-// is supported. Max is 4.
-// Note that font support for your codepoints is also required!
-#define WIDECHAR 2
-
-#define BTN_LEFT 12
-#define BTN_MID 14
-#define BTN_RIGHT 13
-
-#define LCD_CLK 5
-#define LCD_SDA 4
-#define LCD_FPS_TARGET 60
-
-#define SERIAL_BAUDS 9600
-
-// Font from https://github.com/olikraus/u8g2/wiki/fntlistall
-#define lcd_font u8g2_font_4x6_mf
-
-#define TERMINAL_MAX_WIDTH 40
-#define TERMINAL_MAX_HEIGHT 24
-
-#define BUTTON_STRLEN 10
-
-/* End build configuration */
-
 #define VERSION "0.0.1"
 
+#include "Config.h"
 #include <U8g2lib.h>
 #include <Wire.h>
 #include "OneButton.h"
