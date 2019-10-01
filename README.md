@@ -6,9 +6,5 @@ It has been tested on the [TTGO OLED ESP8622 SH1106](https://www.aliexpress.com/
 
 [![Screenshot](images/screenshot-menu.jpg)](http://www.youtube.com/watch?v=VxAwc2s-E1o)
 
-## Required libraries
-
-From the Arduino library manager:
-* OneButton
-* U8g2
-* ESP8266Scheduler
+* [Building](docs/Building.md)
+* [Usage](docs/Usage.md)
