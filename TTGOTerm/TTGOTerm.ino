@@ -18,6 +18,9 @@
 // Font from https://github.com/olikraus/u8g2/wiki/fntlistall
 #define lcd_font u8g2_font_4x6_mf
 
+#define TERMINAL_MAX_WIDTH 40
+#define TERMINAL_MAX_HEIGHT 24
+
 #define BUTTON_STRLEN 10
 
 /* End build configuration */
@@ -85,11 +88,10 @@ extern char current_charset;
 // This is all set by the terminal_setup based on current font and display size
 extern ScrollRegion scroll_region;
 extern Cursor current_cursor, saved_cursor;
-extern unsigned char terminal_tab_stops[80/8];
+extern unsigned char terminal_tab_stops[TERMINAL_MAX_WIDTH/8];
 extern int char_height, char_width,
        terminal_width, terminal_height, display_height_offset, display_width_offset;
-// Just a maximum, scrolling is not implemented
-extern Glyph terminal_buffer[80 * 80];
+extern Glyph terminal_buffer[TERMINAL_MAX_WIDTH * TERMINAL_MAX_HEIGHT];
 
 extern int newline_eating_mode;
 
