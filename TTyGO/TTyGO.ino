@@ -4,7 +4,11 @@
 #include <U8g2lib.h>
 #include <Wire.h>
 #include "OneButton.h"
-#include <Scheduler.h> // ESP8266Scheduler
+#ifdef USE_ESP8266SCHEDULER
+  #include <Scheduler.h> // ESP8266Scheduler
+#else
+  #include "Scheduler.h"
+#endif
 
 #ifdef FLASH_STRINGS
   #define S(s) F(s)
