@@ -64,6 +64,8 @@ void terminal_setup();
 void terminal_backspace();
 void terminal_newline();
 void terminal_put_glyph(Glyph g);
+void terminal_reset();
+
 void param_temp_buffer_digest(int default_value = 1);
 void param_temp_buffer_eat(char c);
 

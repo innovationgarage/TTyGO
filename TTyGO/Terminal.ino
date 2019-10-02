@@ -165,3 +165,13 @@ void terminal_put_glyph(Glyph g) {
   ++current_cursor.x;
   handle_scroll();
 }
+
+void terminal_reset()
+{
+   scroll_region.upper = 1;
+   scroll_region.lower = terminal_height;
+
+   for (int i = 1; i <= terminal_width; i++) {
+     BIT_SET(terminal_tab_stops, i, (i - 1) % 8 == 0);
+   }
+}

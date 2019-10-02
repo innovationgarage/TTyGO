@@ -38,6 +38,7 @@ class ScreenTask : public Task {
       display_height_offset = (u8g2.getDisplayHeight() - (terminal_height * char_height)) / 2;
       display_width_offset = (u8g2.getDisplayWidth() - (terminal_width * char_width)) / 2;
       //u8g2.sendF("c", 0x0a7); // Invert display
+      terminal_reset();
     }
 
     void loop() {
