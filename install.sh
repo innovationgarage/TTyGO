@@ -7,6 +7,8 @@ if ! [ -e ~/bin/arduino-cli ]; then
   )
 fi
 
+export PATH=~/bin:$PATH
+
 arduino-cli core update-index --additional-urls http://arduino.esp8266.com/stable/package_esp8266com_index.json
 arduino-cli core install esp8266:esp8266 --additional-urls http://arduino.esp8266.com/stable/package_esp8266com_index.json
 
