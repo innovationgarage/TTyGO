@@ -18,14 +18,6 @@ void terminal_draw()
     }
 }
 
-// Draws the on screen keyboard to the lcd
-void osk_draw()
-{
-  u8g2.drawRBox(0,0,50,50,3);
-  u8g2.setCursor(5,40);
-  u8g2.print(osk_keyboard[osk_current_selection].label);
-}
-
 // Draws the screen
 void screen_draw()
 {

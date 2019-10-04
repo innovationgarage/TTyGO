@@ -3,14 +3,22 @@ bool osk_visible = false;
 
 typedef struct {
   char label[4];
-  char keycode;
+  char code[8];
 } Key;
 
-const Key osk_keyboard[] = { { "A", 'A', }, { "B", 'B', }, { "C", 'C', }, { "RET", '\n', }, { "ESC", 11, }, { "TAB", '\t', } };
+const Key osk_keyboard[] = { { "A", "A", }, { "B", "B", }, { "C", "C", }, { "RET", '\n', }, { "ESC", 11, }, { "TAB", '\t', } };
 const int osk_keyboard_length = ArrayLength(osk_keyboard);
 const int osk_default_selection = 0;
 const int osk_largejump = 10; // When holding a key
 int osk_current_selection;
+
+// Draws the on screen keyboard to the lcd
+void osk_draw()
+{
+  u8g2.drawRBox(0,0,50,50,3);
+  u8g2.setCursor(5,40);
+  u8g2.print(osk_keyboard[osk_current_selection].label);
+}
 
 // Returns true if it was out of bounds
 bool osk_update_check_bounds()
@@ -45,7 +53,7 @@ void button_osk_left_hold()
 
 void button_osk_middle_click()
 {
-  Serial.print(osk_keyboard[osk_current_selection].keycode);
+  Serial.print(osk_keyboard[osk_current_selection].code);
 }
 
 void button_osk_middle_hold()
