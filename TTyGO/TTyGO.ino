@@ -123,8 +123,7 @@ void serial_print_glyph(Glyph g);
 void reset_buttons();
 void reset_button(int i);
 
-
-
+bool lcd_dirty = true; // invoke a redraw
 
 void serial_print_glyph(Glyph g) {
   Serial.print(g.a);

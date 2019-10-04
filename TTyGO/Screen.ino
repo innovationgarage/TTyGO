@@ -1,24 +1,40 @@
-bool lcd_dirty = true; // invoke a redraw
-
 // Draws terminal to the lcd
 void terminal_draw()
 {
-  u8g2.clearBuffer();
   for (int x = 1; x <= terminal_width; x++)
     for (int y = 1; y <= terminal_height; y++)
     {
       terminal_setcursor(x, y);
       u8g2.print(TERM(x, y).a);
-      #if WIDECHAR > 1
-      if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b); 
-      #if WIDECHAR > 2
+#if WIDECHAR > 1
+      if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b);
+#if WIDECHAR > 2
       if (TERM(x, y).c != NUL) u8g2.print(TERM(x, y).c);
-      #if WIDECHAR > 3
+#if WIDECHAR > 3
       if (TERM(x, y).d != NUL) u8g2.print(TERM(x, y).d);
-      #endif
-      #endif
-      #endif
+#endif
+#endif
+#endif
     }
+}
+
+// Draws the on screen keyboard to the lcd
+void osk_draw()
+{
+  u8g2.drawRBox(0,0,50,50,3);
+  u8g2.setCursor(5,40);
+  u8g2.print(osk_keyboard[osk_current_selection].label);
+}
+
+// Draws the screen
+void screen_draw()
+{
+  u8g2.clearBuffer();
+  terminal_draw();
+
+  // Other elements on top
+  if (osk_visible)
+    osk_draw();
   u8g2.sendBuffer();
 }
 
@@ -47,7 +63,7 @@ class ScreenTask : public Task {
 
       // Refresh the oled
       if (lcd_dirty)
-        terminal_draw();
+        screen_draw();
 
       // Keep the framerate constant
       delay((1000 / LCD_FPS_TARGET) - (millis() - redraw_start));
