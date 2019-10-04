@@ -1,17 +1,12 @@
 State current_state = (State) &initial_state;
 
-void loop(void) {
-  /* Nothing here, check Setup.ino */
-}
-
-char initial[] = TERMINAL_INIT_BANNER;
-
 class SerialTask : public Task {
   protected:
     void setup()
     {
-      for (int i = 0; i < strlen(initial); i++) {
-        current_state = (State) current_state(initial[i]);
+      const char *initial = (const char *) S(TERMINAL_INIT_BANNER);
+      for (int i = 0; i < S_len(initial); i++) {
+        current_state = (State) current_state(S_get(initial, i));
       }
     }
 

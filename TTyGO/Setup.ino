@@ -1,3 +1,7 @@
+void loop(void) {
+  /* Nothing here, check Setup.ino */
+}
+
 void setup(void)
 {
   // change hardware I2C pins to (5,4) (D1,D2)

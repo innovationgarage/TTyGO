@@ -12,8 +12,12 @@
 
 #ifdef FLASH_STRINGS
   #define S(s) F(s)
+  #define S_len(s) strlen_P(s)
+  #define S_get(s, i) pgm_read_byte(s + i)
 #else
   #define S(s) s
+  #define S_len(s) strlen(s)
+  #define S_get(s, i) (s[i])
 #endif
 
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
@@ -119,8 +123,7 @@ void serial_print_glyph(Glyph g);
 void reset_buttons();
 void reset_button(int i);
 
-
-
+bool lcd_dirty = true; // invoke a redraw
 
 void serial_print_glyph(Glyph g) {
   Serial.print(g.a);
