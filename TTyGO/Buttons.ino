@@ -69,8 +69,27 @@ void button_right_hold()
   Serial.print(buttons[5]);
 }
 
+// Just clears all button callbacks
+void deatach_buttons()
+{
+  button_left.attachClick(NULL);
+  button_left.attachLongPressStart(NULL);
+  button_left.attachDuringLongPress(NULL);
+  button_left.attachLongPressStop(NULL);
+  button_middle.attachClick(NULL);
+  button_middle.attachLongPressStart(NULL);
+  button_left.attachDuringLongPress(NULL);
+  button_middle.attachLongPressStop(NULL);
+  button_right.attachClick(NULL);
+  button_right.attachLongPressStart(NULL);
+  button_right.attachDuringLongPress(NULL);
+  button_right.attachLongPressStop(NULL);
+}
+
 void attach_buttons()
 {
+  deatach_buttons();
+  
   // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
   button_left.attachClick(button_left_click);
   button_left.attachLongPressStart(button_left_hold);

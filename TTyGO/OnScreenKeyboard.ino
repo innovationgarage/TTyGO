@@ -1,5 +1,6 @@
 #include "utilities.h"
 bool osk_visible = false;
+const byte OSK_OPEN = 10, OSK_OPENING = 20, OSK_OPENED = 21, OSK_RUNNING = 30, OSK_CLOSE = 40, OSK_CLOSING = 41, OSK_CLOSED = 50;
 
 typedef struct {
   char label[4];
@@ -18,16 +19,62 @@ const Key osk_keyboard[] = { {"A", "A"}, {"B", "B"}, {"C", "C"}, {"D", "D"}, {"E
 const int osk_keyboard_length = ArrayLength(osk_keyboard);
 const int osk_default_selection = 0;
 const int osk_largejump = 10; // When holding a key
-int osk_current_selection;
-
+int osk_current_selection, osk_animation_frame;
+bool osk_position_top;
+byte osk_current_mode;
+int osk_position;
 // Draws the on screen keyboard to the lcd
 void osk_draw()
 {
-  u8g2.drawRBox(10, 10, 17, 10, 3);
-  u8g2.setCursor(12, 17);
-  u8g2.setDrawColor(0);
-  u8g2.print(osk_keyboard[osk_current_selection].label);
-  u8g2.setDrawColor(1);
+  switch (osk_current_mode)
+  {
+    case OSK_OPEN:
+      osk_position_top = current_cursor.y > terminal_height / 2; // OSK goes on top if the cursor is on the bottom
+      osk_animation_frame = 0;
+      osk_current_mode = OSK_OPENING;
+      osk_current_selection = osk_default_selection;
+
+    case OSK_OPENING:
+      //u8g2.drawBox(0, osk_position_top?0:(u8g2.getDisplayHeight()-(char_height+2)), min(1,), char_height+2);
+      osk_position = osk_animation_frame / 12;
+      u8g2.drawBox(0, osk_position_top ? (0) : (9 - osk_position + u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), osk_position);
+
+      if ((osk_animation_frame += 20) > 100)
+        osk_current_mode = OSK_OPENED;
+      break;
+
+    case OSK_OPENED:
+      attach_osk_buttons();
+      osk_current_mode = OSK_RUNNING;
+
+    case OSK_RUNNING:
+      u8g2.drawBox(0, osk_position_top ? 0 : (u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), 9);
+
+      u8g2.setCursor(12, osk_position_top ? char_height + 1 : (u8g2.getDisplayHeight() - 2));
+      u8g2.setDrawColor(0);
+      u8g2.print(osk_keyboard[osk_current_selection].label);
+      u8g2.setDrawColor(1);
+      break;
+
+    case OSK_CLOSE:
+      osk_animation_frame = 100;
+      osk_current_mode = OSK_CLOSING;
+
+    case OSK_CLOSING:
+      //u8g2.drawBox(0, osk_position_top?0:(u8g2.getDisplayHeight()-(char_height+2)), min(1,), char_height+2);
+      osk_position = osk_animation_frame / 12;
+      // TODO: Create only one function to draw the keyboard
+      u8g2.drawBox(0, osk_position_top ? (0) : (9 - osk_position + u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), osk_position);
+
+      if ((osk_animation_frame -= 20) <= 0)
+        osk_current_mode = OSK_CLOSED;
+      break;
+
+    case OSK_CLOSED:
+      osk_visible = false;
+      attach_buttons();
+      break;
+  }
 }
 
 // Returns true if it was out of bounds
@@ -56,11 +103,6 @@ void button_osk_left_click()
   osk_update_selection(-1);
 }
 
-void button_osk_left_hold()
-{
-  osk_update_selection(-osk_largejump);
-}
-
 void button_osk_middle_click()
 {
   Serial.print(osk_keyboard[osk_current_selection].code);
@@ -76,31 +118,30 @@ void button_osk_right_click()
   osk_update_selection(1);
 }
 
-void button_osk_right_hold()
-{
-  osk_update_selection(osk_largejump);
-}
-
 void attach_osk_buttons()
 {
   // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
   button_left.attachClick(button_osk_left_click);
-  button_left.attachLongPressStart(button_osk_left_hold);
+  button_left.attachLongPressStart(button_osk_left_click);
+  button_left.attachDuringLongPress(button_osk_left_click);
+
   button_middle.attachClick(button_osk_middle_click);
   button_middle.attachLongPressStart(button_osk_middle_hold);
+
   button_right.attachClick(button_osk_right_click);
-  button_right.attachLongPressStart(button_osk_right_hold);
+  button_right.attachLongPressStart(button_osk_right_click);
+  button_right.attachDuringLongPress(button_osk_right_click);
 }
 
 void osk_show()
 {
-  osk_current_selection = osk_default_selection;
+  osk_current_mode = OSK_OPEN;
   osk_visible = true;
-  attach_osk_buttons();
+  deatach_buttons ();
 }
 
 void osk_hide()
 {
-  osk_visible = false;
-  attach_buttons();
+  osk_current_mode = OSK_CLOSE;
+  deatach_buttons ();
 }
