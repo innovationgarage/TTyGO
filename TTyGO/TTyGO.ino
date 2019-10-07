@@ -4,6 +4,10 @@
 #include <U8g2lib.h>
 #include <Wire.h>
 #include "OneButton.h"
+
+// Comment the line below to use the "fake" scheduler
+#define USE_ESP8266SCHEDULER
+
 #ifdef USE_ESP8266SCHEDULER
   #include <Scheduler.h> // ESP8266Scheduler
 #else
