@@ -41,14 +41,14 @@
 // \x1bc\x1b[1;1H
 
 #if WIDECHAR > 1
-  #define WIDECHARSTR " w UTF-8"
+  #define WIDECHARSTR " UTF-8"
   #define BANNER "Powered by räksmörgås\n"
 #else
   #define WIDECHARSTR ""
   #define BANNER ""
 #endif
 
-#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
+#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION "\nVT220" WIDECHARSTR " " STR(SERIAL_BAUDS) "bps\nBy InnovationGarage AS\n" BANNER
 
 // Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
 // Note: Only available on the ESP platform
