@@ -5,11 +5,14 @@
 #define BTN_MID 14
 #define BTN_RIGHT 13
 
+// Comment the line below to use the "fake" scheduler
+//#define USE_ESP8266SCHEDULER
+
 #define LCD_CLK 5
 #define LCD_SDA 4
 #define LCD_FPS_TARGET 60
 
-#define SERIAL_BAUDS 9600
+#define SERIAL_BAUDS 115200
 
 
 // Software feature configuration
