@@ -1,5 +1,5 @@
 #include "utilities.h"
-bool osk_visible = false;
+bool osk_visible = false, osk_position_top;
 const byte OSK_OPEN = 10, OSK_OPENING = 20, OSK_OPENED = 21, OSK_RUNNING = 30, OSK_CLOSE = 40, OSK_CLOSING = 41, OSK_CLOSED = 50;
 
 typedef struct {
@@ -12,17 +12,16 @@ const Key osk_keyboard[] = { {"A", "A"}, {"B", "B"}, {"C", "C"}, {"D", "D"}, {"E
   {"Y", "Y"}, {"Z", "Z"}, {"0", "0"}, {"1", "1"}, {"2", "2"}, {"3", "3"}, {"4", "4"}, {"5", "5"}, {"6", "6"}, {"7", "7"}, {"8", "8"}, {"9", "9"}, {"a", "a"},
   {"b", "b"}, {"c", "c"}, {"d", "d"}, {"e", "e"}, {"f", "f"}, {"g", "g"}, {"h", "h"}, {"i", "i"}, {"j", "j"}, {"k", "k"}, {"l", "l"}, {"m", "m"}, {"n", "n"},
   {"o", "o"}, {"p", "p"}, {"q", "q"}, {"r", "r"}, {"s", "s"}, {"t", "t"}, {"u", "u"}, {"v", "v"}, {"w", "w"}, {"x", "x"}, {"y", "y"}, {"z", "z"}, {"[", "["},
-  {"]", "]"}, {"(", "("}, {")", ")"}, {".", "."}, {",", ","}, {":", ":"}, {";", ";"}, {"+", "+"}, {"-", "-"}, {"*", "*"}, {"/", "/"}, {"!", "!"}, {""", """},
+  {"]", "]"}, {"(", "("}, {")", ")"}, {".", "."}, {",", ","}, {":", ":"}, {";", ";"}, {"+", "+"}, {"-", "-"}, {"*", "*"}, {"/", "/"}, {"!", "!"}, {"\"", "\""},
   {"#", "#"}, {"%", "%"}, {"&", "&"}, {"?", "?"}, {"'", "'"}, {"*", "*"}, {"|", "|"}, {"_", "_"}, {"<", "<"}, {">", ">"}, {"ESC", ESC}, {"RET", "\n"}, {"TAB", "\t"},
 };
 
-const int osk_keyboard_length = ArrayLength(osk_keyboard);
-const int osk_default_selection = 0;
-const int osk_largejump = 10; // When holding a key
-int osk_current_selection, osk_animation_frame;
-bool osk_position_top;
+const int osk_keyboard_length = ArrayLength(osk_keyboard), osk_default_selection = 0, keys_to_show_per_side = 4,
+          osk_offset_keys_default = 3, osk_offset_bounce_length = 7, osk_offset_bounce_speed = 5;
+int osk_current_selection, osk_animation_frame, osk_position;
+double osk_offset_keys = osk_offset_keys_default; // For the bounce animation
 byte osk_current_mode;
-int osk_position;
+
 // Draws the on screen keyboard to the lcd
 void osk_draw()
 {
@@ -49,11 +48,17 @@ void osk_draw()
 
     case OSK_RUNNING:
       u8g2.drawBox(0, osk_position_top ? 0 : (u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), 9);
+      for (int i = -keys_to_show_per_side; i <= +keys_to_show_per_side; i++)
+      {
+        u8g2.setCursor(((i + keys_to_show_per_side) * 3 * 5) + osk_offset_keys, osk_position_top ? char_height + 1 : (u8g2.getDisplayHeight() - 2));
+        u8g2.setDrawColor(0 == i ? 1 : 0);
+        u8g2.print(osk_keyboard[osk_check_bounds(osk_current_selection + i)].label);
+        u8g2.setDrawColor(1);
+      }
 
-      u8g2.setCursor(12, osk_position_top ? char_height + 1 : (u8g2.getDisplayHeight() - 2));
-      u8g2.setDrawColor(0);
-      u8g2.print(osk_keyboard[osk_current_selection].label);
-      u8g2.setDrawColor(1);
+      osk_offset_keys += (osk_offset_keys_default - osk_offset_keys) / osk_offset_bounce_speed;
+      if (abs(osk_offset_keys - osk_offset_keys_default) > 0.1)
+        lcd_dirty = true;
       break;
 
     case OSK_CLOSE:
@@ -77,30 +82,31 @@ void osk_draw()
   }
 }
 
-// Returns true if it was out of bounds
-bool osk_update_check_bounds()
+// Returns corrected item if it was out of bounds
+int osk_check_bounds(int pos)
 {
+  int corrected = pos;
+
   // Loop boundaries
-  if (osk_current_selection < 0)
-    osk_current_selection = osk_keyboard_length + osk_current_selection;
-  else if (osk_current_selection >= osk_keyboard_length)
-    osk_current_selection = osk_current_selection - osk_keyboard_length;
-  else
-    return false;
-  return true;
+  if (pos < 0)
+    corrected = osk_keyboard_length + pos;
+  else if (pos >= osk_keyboard_length)
+    corrected = pos - osk_keyboard_length;
+
+  return corrected;
 }
 
-// Select a key
-bool osk_update_selection(int v)
+// Select a key, if direction is true, it goes forward
+bool osk_update_selection(bool direction)
 {
   lcd_dirty = true;
-  osk_current_selection += v;
-  while (osk_update_check_bounds());
+  osk_current_selection = osk_check_bounds(osk_current_selection + (direction ? 1 : -1));
 }
 
 void button_osk_left_click()
 {
-  osk_update_selection(-1);
+  osk_offset_keys = osk_offset_keys_default - osk_offset_bounce_length;
+  osk_update_selection(false);
 }
 
 void button_osk_middle_click()
@@ -115,7 +121,8 @@ void button_osk_middle_hold()
 
 void button_osk_right_click()
 {
-  osk_update_selection(1);
+  osk_offset_keys = osk_offset_keys_default + osk_offset_bounce_length;
+  osk_update_selection(true);
 }
 
 void attach_osk_buttons()
