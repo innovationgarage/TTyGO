@@ -114,6 +114,10 @@ void button_osk_left_click()
 void button_osk_middle_click()
 {
   Serial.print(osk_keyboard[osk_current_selection].code);
+
+  // Local echo
+  /*Glyph g = { osk_keyboard[osk_current_selection].code[0] };
+  terminal_put_glyph(g);*/
 }
 
 void button_osk_middle_hold()
