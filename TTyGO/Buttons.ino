@@ -5,10 +5,23 @@ char buttons[6][BUTTON_STRLEN];
 
 void reset_buttons()
 {
+  // Change the tick speed for detecting single clicks
+  button_left.setClickTicks(BTN_CLICK_SPEED);
+  button_middle.setClickTicks(BTN_CLICK_SPEED);
+  button_right.setClickTicks(BTN_CLICK_SPEED);
+
+  // Change the tick speed for the long hold detection
+  button_left.setPressTicks(BTN_PRESS_SPEED);
+  button_middle.setPressTicks(BTN_PRESS_SPEED);
+  button_right.setPressTicks(BTN_PRESS_SPEED);
+
+  // Change the tick speed for detection of a click as "safe"
+  button_left.setDebounceTicks(BTN_DEBOUNCE_SPEED);
+  button_middle.setDebounceTicks(BTN_DEBOUNCE_SPEED);
+  button_right.setDebounceTicks(BTN_DEBOUNCE_SPEED);
+
   for (int i = 0; i < 6; i++)
-  {
     reset_button(i);
-  }
 }
 
 void reset_button(int i)
@@ -89,7 +102,7 @@ void deatach_buttons()
 void attach_buttons()
 {
   deatach_buttons();
-  
+
   // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
   button_left.attachClick(button_left_click);
   button_left.attachLongPressStart(button_left_hold);

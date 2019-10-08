@@ -1,12 +1,16 @@
 /* Build configuration */
 
-// Hardware mapping configuration
+
+// ************************************************
+// **** Hardware mapping configuration  ***********
+// ************************************************
 #define BTN_LEFT 12
 #define BTN_MID 14
 #define BTN_RIGHT 13
 
-// Comment the line below to use the "fake" scheduler
-#define USE_ESP8266SCHEDULER
+#define BTN_DEBOUNCE_SPEED 40 // Debouncer: default 50 ms
+#define BTN_CLICK_SPEED 300 // Click: default 600 ms
+#define BTN_PRESS_SPEED 500 // Long press: default 1000 ms
 
 #define LCD_CLK 5
 #define LCD_SDA 4
@@ -14,8 +18,27 @@
 
 #define SERIAL_BAUDS 115200
 
+// Comment the line below to use the "fake" scheduler
+#define USE_ESP8266SCHEDULER
 
-// Software feature configuration
+
+// ************************************************
+// **** On Screen Keyboard configuration  *********
+// ************************************************
+
+// Check hardware mapping configuration for tunning the speed of they key repeats when holding and scrolling
+
+const int keys_to_show_per_side = 4, // How many keys appear to the sides of the currently selected key in the OSK
+          osk_hold_delay = 200, // Time for delaying the speedy scroll when holding a key: default 200
+          osk_hold_delay_acceleration = 30, // Acceleration of the scroll when holding: default 30
+          osk_offset_keys_default = 3, // Pixels from the left of the screen to the start of the first key to show
+          osk_offset_bounce_length = 7, // Graphical horizontal jump when scrolling
+          osk_offset_bounce_speed = 5; // Speed for returning to the center after the bounce jump
+
+
+// ************************************************
+// **** Software feature configuration  ***********
+// ************************************************
 
 // Store strings constants in flash rather than RAM
 #define FLASH_STRINGS 1
@@ -41,14 +64,14 @@
 // \x1bc\x1b[1;1H
 
 #if WIDECHAR > 1
-  #define WIDECHARSTR " UTF-8"
-  #define BANNER "Powered by räksmörgås\n"
+#define WIDECHARSTR " w UTF-8"
+#define BANNER "Powered by räksmörgås\n"
 #else
-  #define WIDECHARSTR ""
-  #define BANNER ""
+#define WIDECHARSTR ""
+#define BANNER ""
 #endif
 
-#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION "\nVT220" WIDECHARSTR " " STR(SERIAL_BAUDS) "bps\nBy InnovationGarage AS\n" BANNER
+#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
 
 // Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
 // Note: Only available on the ESP platform

@@ -1,10 +1,10 @@
 #include "utilities.h"
-bool osk_visible = false, osk_position_top;
-const byte OSK_OPEN = 10, OSK_OPENING = 20, OSK_OPENED = 21, OSK_RUNNING = 30, OSK_CLOSE = 40, OSK_CLOSING = 41, OSK_CLOSED = 50;
+
+const byte osk_key_size_in_chars = 4, osk_key_code_size_in_chars = 4;
 
 typedef struct {
-  char label[4];
-  char code[8];
+  char label[osk_key_size_in_chars];
+  char code[osk_key_code_size_in_chars];
 } Key;
 
 const Key osk_keyboard[] = { {"A", "A"}, {"B", "B"}, {"C", "C"}, {"D", "D"}, {"E", "E"}, {"F", "F"}, {"G", "G"}, {"H", "H"}, {"I", "I"}, {"J", "J"}, {"K", "K"},
@@ -16,11 +16,19 @@ const Key osk_keyboard[] = { {"A", "A"}, {"B", "B"}, {"C", "C"}, {"D", "D"}, {"E
   {"#", "#"}, {"%", "%"}, {"&", "&"}, {"?", "?"}, {"'", "'"}, {"*", "*"}, {"|", "|"}, {"_", "_"}, {"<", "<"}, {">", ">"}, {"ESC", ESC}, {"RET", "\n"}, {"TAB", "\t"},
 };
 
-const int osk_keyboard_length = ArrayLength(osk_keyboard), osk_default_selection = 0, keys_to_show_per_side = 4,
-          osk_offset_keys_default = 3, osk_offset_bounce_length = 7, osk_offset_bounce_speed = 5;
+bool osk_visible = false, osk_position_top;
+const byte OSK_OPEN = 10, OSK_OPENING = 20, OSK_OPENED = 21, OSK_RUNNING = 30, OSK_CLOSE = 40, OSK_CLOSING = 41, OSK_CLOSED = 50;
+const int osk_keyboard_length = ArrayLength(osk_keyboard), osk_default_selection = 0;
 int osk_current_selection, osk_animation_frame, osk_position;
 double osk_offset_keys = osk_offset_keys_default; // For the bounce animation
+long osk_next_hold;
 byte osk_current_mode;
+
+void osk_draw_box()
+{
+  osk_position =  osk_animation_frame / 12;
+  u8g2.drawBox(0, osk_position_top ? (0) : (9 - osk_position + u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), osk_position);
+}
 
 // Draws the on screen keyboard to the lcd
 void osk_draw()
@@ -34,10 +42,7 @@ void osk_draw()
       osk_current_selection = osk_default_selection;
 
     case OSK_OPENING:
-      //u8g2.drawBox(0, osk_position_top?0:(u8g2.getDisplayHeight()-(char_height+2)), min(1,), char_height+2);
-      osk_position = osk_animation_frame / 12;
-      u8g2.drawBox(0, osk_position_top ? (0) : (9 - osk_position + u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), osk_position);
-
+      osk_draw_box();
       if ((osk_animation_frame += 20) > 100)
         osk_current_mode = OSK_OPENED;
       break;
@@ -50,7 +55,8 @@ void osk_draw()
       u8g2.drawBox(0, osk_position_top ? 0 : (u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), 9);
       for (int i = -keys_to_show_per_side; i <= +keys_to_show_per_side; i++)
       {
-        u8g2.setCursor(((i + keys_to_show_per_side) * 3 * 5) + osk_offset_keys, osk_position_top ? char_height + 1 : (u8g2.getDisplayHeight() - 2));
+        u8g2.setCursor(((i + keys_to_show_per_side) * osk_key_size_in_chars * char_width) + osk_offset_keys,
+                       osk_position_top ? char_height + 1 : (u8g2.getDisplayHeight() - 2));
         u8g2.setDrawColor(0 == i ? 1 : 0);
         u8g2.print(osk_keyboard[osk_check_bounds(osk_current_selection + i)].label);
         u8g2.setDrawColor(1);
@@ -66,11 +72,7 @@ void osk_draw()
       osk_current_mode = OSK_CLOSING;
 
     case OSK_CLOSING:
-      //u8g2.drawBox(0, osk_position_top?0:(u8g2.getDisplayHeight()-(char_height+2)), min(1,), char_height+2);
-      osk_position = osk_animation_frame / 12;
-      // TODO: Create only one function to draw the keyboard
-      u8g2.drawBox(0, osk_position_top ? (0) : (9 - osk_position + u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), osk_position);
-
+      osk_draw_box();
       if ((osk_animation_frame -= 20) <= 0)
         osk_current_mode = OSK_CLOSED;
       break;
@@ -97,16 +99,16 @@ int osk_check_bounds(int pos)
 }
 
 // Select a key, if direction is true, it goes forward
-bool osk_update_selection(bool direction)
+bool osk_move_selection(bool direction)
 {
   lcd_dirty = true;
+  osk_offset_keys = osk_offset_keys_default - (direction ? -1 : 1) * osk_offset_bounce_length;
   osk_current_selection = osk_check_bounds(osk_current_selection + (direction ? 1 : -1));
 }
 
 void button_osk_left_click()
 {
-  osk_offset_keys = osk_offset_keys_default - osk_offset_bounce_length;
-  osk_update_selection(false);
+  osk_move_selection(false);
 }
 
 void button_osk_middle_click()
@@ -119,25 +121,59 @@ void button_osk_middle_hold()
   osk_hide();
 }
 
+void button_osk_left_hold_start()
+{
+  osk_animation_frame = osk_hold_delay;
+}
+
+void button_osk_right_hold_start()
+{
+  osk_animation_frame = osk_hold_delay;
+}
+
 void button_osk_right_click()
 {
-  osk_offset_keys = osk_offset_keys_default + osk_offset_bounce_length;
-  osk_update_selection(true);
+  osk_move_selection(true);
+}
+
+// Select a key, while holding, using delay, if direction is true, it goes forward
+void osk_move_selection_held(boolean direction)
+{
+  if (millis() > osk_next_hold)
+  {
+    if (direction)
+      button_osk_right_click();
+    else
+      button_osk_left_click();
+
+    osk_next_hold = millis() + osk_animation_frame;
+
+    if (osk_animation_frame > 0)
+      osk_animation_frame -= osk_hold_delay_acceleration;
+  }
+}
+
+void button_osk_right_hold()
+{
+  osk_move_selection_held(true);
+}
+
+void button_osk_left_hold()
+{
+  osk_move_selection_held(false);
 }
 
 void attach_osk_buttons()
 {
   // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
   button_left.attachClick(button_osk_left_click);
-  button_left.attachLongPressStart(button_osk_left_click);
-  button_left.attachDuringLongPress(button_osk_left_click);
-
+  button_left.attachLongPressStart(button_osk_left_hold_start);
+  button_left.attachDuringLongPress(button_osk_left_hold);
   button_middle.attachClick(button_osk_middle_click);
   button_middle.attachLongPressStart(button_osk_middle_hold);
-
   button_right.attachClick(button_osk_right_click);
-  button_right.attachLongPressStart(button_osk_right_click);
-  button_right.attachDuringLongPress(button_osk_right_click);
+  button_right.attachLongPressStart(button_osk_right_hold_start);
+  button_right.attachDuringLongPress(button_osk_right_hold);
 }
 
 void osk_show()
