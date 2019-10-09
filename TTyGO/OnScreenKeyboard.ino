@@ -20,7 +20,7 @@ bool osk_visible = false, osk_position_top;
 const byte OSK_OPEN = 10, OSK_OPENING = 20, OSK_OPENED = 21, OSK_RUNNING = 30, OSK_CLOSE = 40, OSK_CLOSING = 41, OSK_CLOSED = 50;
 const int osk_keyboard_length = ArrayLength(osk_keyboard), osk_default_selection = 0;
 int osk_current_selection, osk_animation_frame, osk_position;
-double osk_offset_keys = osk_offset_keys_default; // For the bounce animation
+double osk_offset_keys; // For the bounce animation
 long osk_next_hold;
 byte osk_current_mode;
 
@@ -29,6 +29,12 @@ void osk_draw_box()
   osk_position =  osk_animation_frame / 12;
   u8g2.drawBox(0, osk_position_top ? (0) : (9 - osk_position + u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), osk_position);
 }
+#define OSK_KEYS_TO_SHOW_PER_SIDE 4 // How many keys appear to the sides of the currently selected key in the OSK
+#define OSK_HOLD_DELAY 200 // Time for delaying the speedy scroll when holding a key: default 200
+#define OSK_HOLD_DELAY_ACCELERATION 30 // Acceleration of the scroll when holding: default 30
+#define OSK_OFFSET_KEYS_DEFAULT 3// Pixels from the left of the screen to the start of the first key to show
+#define OSK_OFFSET_BOUNCE_LENGTH 7 // Graphical horizontal jump when scrolling
+#define OSK_OFFSET_BOUNCE_SPEED 5 // Speed for returning to the center after the bounce jump
 
 // Draws the on screen keyboard to the lcd
 void osk_draw()
@@ -40,6 +46,7 @@ void osk_draw()
       osk_animation_frame = 0;
       osk_current_mode = OSK_OPENING;
       osk_current_selection = osk_default_selection;
+      osk_offset_keys = OSK_OFFSET_KEYS_DEFAULT+OSK_OFFSET_BOUNCE_LENGTH; // Do a bounce when openning
 
     case OSK_OPENING:
       osk_draw_box();
@@ -53,17 +60,17 @@ void osk_draw()
 
     case OSK_RUNNING:
       u8g2.drawBox(0, osk_position_top ? 0 : (u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), 9);
-      for (int i = -keys_to_show_per_side; i <= +keys_to_show_per_side; i++)
+      for (int i = -OSK_KEYS_TO_SHOW_PER_SIDE; i <= +OSK_KEYS_TO_SHOW_PER_SIDE; i++)
       {
-        u8g2.setCursor(((i + keys_to_show_per_side) * osk_key_size_in_chars * char_width) + osk_offset_keys,
+        u8g2.setCursor(((i + OSK_KEYS_TO_SHOW_PER_SIDE) * osk_key_size_in_chars * char_width) + osk_offset_keys,
                        osk_position_top ? char_height + 1 : (u8g2.getDisplayHeight() - 2));
         u8g2.setDrawColor(0 == i ? 1 : 0);
         u8g2.print(osk_keyboard[osk_check_bounds(osk_current_selection + i)].label);
         u8g2.setDrawColor(1);
       }
 
-      osk_offset_keys += (osk_offset_keys_default - osk_offset_keys) / osk_offset_bounce_speed;
-      if (abs(osk_offset_keys - osk_offset_keys_default) > 0.1)
+      osk_offset_keys += (OSK_OFFSET_KEYS_DEFAULT - osk_offset_keys) / OSK_OFFSET_BOUNCE_SPEED;
+      if (abs(osk_offset_keys - OSK_OFFSET_KEYS_DEFAULT) > 0.1)
         lcd_dirty = true;
       break;
 
@@ -102,7 +109,7 @@ int osk_check_bounds(int pos)
 bool osk_move_selection(bool direction)
 {
   lcd_dirty = true;
-  osk_offset_keys = osk_offset_keys_default - (direction ? -1 : 1) * osk_offset_bounce_length;
+  osk_offset_keys = OSK_OFFSET_KEYS_DEFAULT - (direction ? -1 : 1) * OSK_OFFSET_BOUNCE_LENGTH;
   osk_current_selection = osk_check_bounds(osk_current_selection + (direction ? 1 : -1));
 }
 
@@ -125,14 +132,9 @@ void button_osk_middle_hold()
   osk_hide();
 }
 
-void button_osk_left_hold_start()
+void button_osk_hold_start()
 {
-  osk_animation_frame = osk_hold_delay;
-}
-
-void button_osk_right_hold_start()
-{
-  osk_animation_frame = osk_hold_delay;
+  osk_animation_frame = OSK_HOLD_DELAY;
 }
 
 void button_osk_right_click()
@@ -153,7 +155,7 @@ void osk_move_selection_held(boolean direction)
     osk_next_hold = millis() + osk_animation_frame;
 
     if (osk_animation_frame > 0)
-      osk_animation_frame -= osk_hold_delay_acceleration;
+      osk_animation_frame -= OSK_HOLD_DELAY_ACCELERATION;
   }
 }
 
@@ -171,12 +173,12 @@ void attach_osk_buttons()
 {
   // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
   button_left.attachClick(button_osk_left_click);
-  button_left.attachLongPressStart(button_osk_left_hold_start);
+  button_left.attachLongPressStart(button_osk_hold_start);
   button_left.attachDuringLongPress(button_osk_left_hold);
   button_middle.attachClick(button_osk_middle_click);
   button_middle.attachLongPressStart(button_osk_middle_hold);
   button_right.attachClick(button_osk_right_click);
-  button_right.attachLongPressStart(button_osk_right_hold_start);
+  button_right.attachLongPressStart(button_osk_hold_start);
   button_right.attachDuringLongPress(button_osk_right_hold);
 }
 

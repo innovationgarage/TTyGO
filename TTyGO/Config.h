@@ -28,13 +28,12 @@
 
 // Check hardware mapping configuration for tunning the speed of they key repeats when holding and scrolling
 
-const int keys_to_show_per_side = 4, // How many keys appear to the sides of the currently selected key in the OSK
-          osk_hold_delay = 200, // Time for delaying the speedy scroll when holding a key: default 200
-          osk_hold_delay_acceleration = 30, // Acceleration of the scroll when holding: default 30
-          osk_offset_keys_default = 3, // Pixels from the left of the screen to the start of the first key to show
-          osk_offset_bounce_length = 7, // Graphical horizontal jump when scrolling
-          osk_offset_bounce_speed = 5; // Speed for returning to the center after the bounce jump
-
+#define OSK_KEYS_TO_SHOW_PER_SIDE 4 // How many keys appear to the sides of the currently selected key in the OSK
+#define OSK_HOLD_DELAY 200 // Time for delaying the speedy scroll when holding a key: default 200
+#define OSK_HOLD_DELAY_ACCELERATION 30 // Acceleration of the scroll when holding: default 30
+#define OSK_OFFSET_KEYS_DEFAULT 3// Pixels from the left of the screen to the start of the first key to show
+#define OSK_OFFSET_BOUNCE_LENGTH 7 // Graphical horizontal jump when scrolling
+#define OSK_OFFSET_BOUNCE_SPEED 5 // Speed for returning to the center after the bounce jump
 
 // ************************************************
 // **** Software feature configuration  ***********
@@ -43,13 +42,17 @@ const int keys_to_show_per_side = 4, // How many keys appear to the sides of the
 // Store strings constants in flash rather than RAM
 #define FLASH_STRINGS 1
 
+// Speed for the blinking cursor
+#define TERMINAL_CURSOR_BLINK_SPEED_LOOP 1000 // Total loop in ms
+#define TERMINAL_CURSOR_BLINK_SPEED_ON 450 // Off time in ms
+
 // Length of UTF-8 multi-byte sequences to support. If 1, only ASCII
 // is supported. Max is 4.
 // Note that font support for your codepoints is also required!
 #define WIDECHAR 2
 
 // Font from https://github.com/olikraus/u8g2/wiki/fntlistall
-#define lcd_font u8g2_font_4x6_mf
+#define LCD_FONT u8g2_font_4x6_mf
 
 // Should be >= u8g2.getDisplayWidth() / font.char_width
 #define TERMINAL_MAX_WIDTH 40

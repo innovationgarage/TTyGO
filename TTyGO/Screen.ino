@@ -1,7 +1,7 @@
 // Draws terminal to the lcd
 void terminal_draw()
 {
-  bool blink_cursor_tick = (millis() % 1000) > 450; 
+  bool blink_cursor_tick = (millis() % TERMINAL_CURSOR_BLINK_SPEED_LOOP) > TERMINAL_CURSOR_BLINK_SPEED_ON; 
   for (int x = 1; x <= terminal_width; x++)
     for (int y = 1; y <= terminal_height; y++)
     {
@@ -45,7 +45,7 @@ class ScreenTask : public Task {
       // init display
       u8g2.begin();
       u8g2.enableUTF8Print();
-      u8g2.setFont(lcd_font);
+      u8g2.setFont(LCD_FONT);
 
       char_height = u8g2.getMaxCharHeight();
       char_width = u8g2.getMaxCharWidth();
