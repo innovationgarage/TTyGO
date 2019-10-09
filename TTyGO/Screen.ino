@@ -1,11 +1,18 @@
 // Draws terminal to the lcd
 void terminal_draw()
 {
+  bool blink_cursor_tick = (millis() % 1000) > 450; 
   for (int x = 1; x <= terminal_width; x++)
     for (int y = 1; y <= terminal_height; y++)
     {
+      // Blinking cursor
+      bool blink_cursor_inverse = blink_cursor_tick && x == current_cursor.x && y == current_cursor.y;
       terminal_setcursor(x, y);
-      u8g2.print(TERM(x, y).a);
+      
+      u8g2.setDrawColor(!blink_cursor_inverse);
+      char tmp = TERM(x, y).a;
+      u8g2.print(tmp == NUL && blink_cursor_inverse ? ' ' : tmp);
+      
 #if WIDECHAR > 1
       if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b);
 #if WIDECHAR > 2
@@ -15,6 +22,7 @@ void terminal_draw()
 #endif
 #endif
 #endif
+      u8g2.setDrawColor(1); // Restore normal drawing color
     }
 }
 
