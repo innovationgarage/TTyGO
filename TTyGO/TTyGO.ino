@@ -3,7 +3,7 @@
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-#include "Config.h"
+#include "config.h"
 #include <U8g2lib.h>
 #include <Wire.h>
 #include "OneButton.h"
@@ -11,7 +11,7 @@
 #ifdef USE_ESP8266SCHEDULER
   #include <Scheduler.h> // ESP8266Scheduler
 #else
-  #include "Scheduler.h"
+  #include "scheduler.h"
 #endif
 
 #ifdef FLASH_STRINGS
