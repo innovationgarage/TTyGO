@@ -141,3 +141,7 @@ void serial_print_glyph(Glyph g) {
   #endif
   #endif
 }
+
+void buffer_serial();
+char serial_buffer_data_available();
+int serial_buffer_get();

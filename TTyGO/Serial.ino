@@ -12,8 +12,10 @@ class SerialTask : public Task {
 
     void loop()
     {
-      while (Serial.available())
-        current_state = (State) current_state(Serial.read());
+      while (serial_buffer_data_available()) {
+        current_state = (State) current_state(serial_buffer_get());
+        buffer_serial();
+      }
     }
 
   private:

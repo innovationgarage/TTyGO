@@ -80,4 +80,6 @@
 // Note: Only available on the ESP platform
 // #define USE_ESP8266SCHEDULER
 
+#define SERIAL_BUFFER_SIZE 1024
+
 /* End build configuration */

@@ -2,7 +2,7 @@
 void terminal_draw()
 {
   bool blink_cursor_tick = (millis() % TERMINAL_CURSOR_BLINK_SPEED_LOOP) > TERMINAL_CURSOR_BLINK_SPEED_ON; 
-  for (int x = 1; x <= terminal_width; x++)
+  for (int x = 1; x <= terminal_width; x++) {
     for (int y = 1; y <= terminal_height; y++)
     {
       // Blinking cursor
@@ -24,6 +24,8 @@ void terminal_draw()
 #endif
       u8g2.setDrawColor(1); // Restore normal drawing color
     }
+    buffer_serial();
+  }
 }
 
 // Draws the screen
@@ -35,7 +37,11 @@ void screen_draw()
   // Other elements on top
   if (osk_visible)
     osk_draw();
-  u8g2.sendBuffer();
+
+  for (uint8_t y = 0; y < u8g2.getBufferTileHeight(); y++) {
+    u8g2.updateDisplayArea(0, y, u8g2.getBufferTileWidth(), 1);
+    buffer_serial();
+  }
 }
 
 class ScreenTask : public Task {
