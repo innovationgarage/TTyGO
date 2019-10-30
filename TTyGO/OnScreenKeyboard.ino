@@ -8,13 +8,13 @@ typedef struct {
   char code[osk_key_code_size_in_chars];
 } Key;
 
-const Key osk_keyboard[] = { {"A", "A"}, {"B", "B"}, {"C", "C"}, {"D", "D"}, {"E", "E"}, {"F", "F"}, {"G", "G"}, {"H", "H"}, {"I", "I"}, {"J", "J"}, {"K", "K"},
+const Key osk_keyboard[] PROGMEM = { {"A", "A"}, {"B", "B"}, {"C", "C"}, {"D", "D"}, {"E", "E"}, {"F", "F"}, {"G", "G"}, {"H", "H"}, {"I", "I"}, {"J", "J"}, {"K", "K"},
   {"L", "L"}, {"M", "M"}, {"N", "N"}, {"O", "O"}, {"P", "P"}, {"Q", "Q"}, {"R", "R"}, {"S", "S"}, {"T", "T"}, {"U", "U"}, {"V", "V"}, {"W", "W"}, {"X", "X"},
-  {"Y", "Y"}, {"Z", "Z"}, {"a", "a"}, {"b", "b"}, {"c", "c"}, {"d", "d"}, {"e", "e"}, {"f", "f"}, {"g", "g"}, {"h", "h"}, {"i", "i"}, {"j", "j"}, {"k", "k"}, 
-  {"l", "l"}, {"m", "m"}, {"n", "n"}, {"o", "o"}, {"p", "p"}, {"q", "q"}, {"r", "r"}, {"s", "s"}, {"t", "t"}, {"u", "u"}, {"v", "v"}, {"w", "w"}, {"x", "x"}, 
-  {"y", "y"}, {"z", "z"}, {"[", "["}, {"]", "]"}, {"(", "("}, {")", ")"}, {".", "."}, {",", ","}, {":", ":"}, {";", ";"}, {"+", "+"}, {"-", "-"}, {"*", "*"}, 
-  {"/", "/"}, {"!", "!"}, {"\"", "\""}, {"#", "#"}, {"%", "%"}, {"&", "&"}, {"?", "?"}, {"'", "'"}, {"*", "*"}, {"|", "|"}, {"_", "_"}, {"<", "<"}, {">", ">"}, 
-  {"0", "0"}, {"1", "1"}, {"2", "2"}, {"3", "3"}, {"4", "4"}, {"5", "5"}, {"6", "6"}, {"7", "7"}, {"8", "8"}, {"9", "9"}, {"ESC", ESC}, {"RET", "\n"}, {"TAB", "\t"},{"DEL", 127},
+  {"Y", "Y"}, {"Z", "Z"}, {"a", "a"}, {"b", "b"}, {"c", "c"}, {"d", "d"}, {"e", "e"}, {"f", "f"}, {"g", "g"}, {"h", "h"}, {"i", "i"}, {"j", "j"}, {"k", "k"},
+  {"l", "l"}, {"m", "m"}, {"n", "n"}, {"o", "o"}, {"p", "p"}, {"q", "q"}, {"r", "r"}, {"s", "s"}, {"t", "t"}, {"u", "u"}, {"v", "v"}, {"w", "w"}, {"x", "x"},
+  {"y", "y"}, {"z", "z"}, {"[", "["}, {"]", "]"}, {"(", "("}, {")", ")"}, {".", "."}, {",", ","}, {":", ":"}, {";", ";"}, {"+", "+"}, {"-", "-"}, {"*", "*"},
+  {"/", "/"}, {"!", "!"}, {"\"", "\""}, {"#", "#"}, {"%", "%"}, {"&", "&"}, {"?", "?"}, {"'", "'"}, {"*", "*"}, {"|", "|"}, {"_", "_"}, {"<", "<"}, {">", ">"},
+  {"0", "0"}, {"1", "1"}, {"2", "2"}, {"3", "3"}, {"4", "4"}, {"5", "5"}, {"6", "6"}, {"7", "7"}, {"8", "8"}, {"9", "9"}, {"ESC", ESC}, {"RET", "\n"}, {"TAB", "\t"}, {"DEL", 127},
 };
 
 bool osk_visible = false, osk_position_top;
@@ -66,7 +66,11 @@ void osk_draw()
         u8g2.setCursor(((i + OSK_KEYS_TO_SHOW_PER_SIDE) * osk_key_size_in_chars * char_width) + osk_offset_keys,
                        osk_position_top ? char_height + 1 : (u8g2.getDisplayHeight() - 2));
         u8g2.setDrawColor(0 == i ? 1 : 0);
-        u8g2.print(osk_keyboard[osk_check_bounds(osk_current_selection + i)].label);
+
+        // make a copy
+        Key k; memcpy_P (&k, &osk_keyboard [osk_check_bounds(osk_current_selection + i)], sizeof k);
+
+        u8g2.print(k.label);
         u8g2.setDrawColor(1);
       }
 
@@ -121,7 +125,10 @@ void button_osk_left_click()
 
 void button_osk_middle_click()
 {
-  Serial.print(osk_keyboard[osk_current_selection].code);
+  // make a copy
+  Key k; memcpy_P (&k, &osk_keyboard [osk_current_selection], sizeof k);
+
+  Serial.print(k.code);
 
   // Local echo
   /*Glyph g = { osk_keyboard[osk_current_selection].code[0] };
