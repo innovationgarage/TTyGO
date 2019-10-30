@@ -4,16 +4,26 @@
 // ************************************************
 // **** Hardware mapping configuration  ***********
 // ************************************************
-#define BTN_LEFT 12
-#define BTN_MID 14
-#define BTN_RIGHT 13
+#define BTN_LEFT A2
+#define BTN_MID 7
+#define BTN_RIGHT A1
 
 #define BTN_DEBOUNCE_SPEED 40 // Debouncer: default 50 ms
 #define BTN_CLICK_SPEED 300 // Click: default 600 ms
 #define BTN_PRESS_SPEED 500 // Long press: default 1000 ms
 
+// Display and display controller
+// Check https://github.com/olikraus/u8g2/wiki/u8g2setupcpp#constructor-name
+// for names.
+#define DISPLAY_CONTROLLER SSD1306
+#define DISPLAY_NAME 128X64_NONAME
+#define DISPLAY_COMM 4W_HW_SPI
+// Constructor arguments for the display controller
+#define DISPLAY_ARGS U8G2_R0, /* cs=*/ 12, /* dc=*/ 4, /* reset=*/ 6
+
 #define LCD_CLK 5
 #define LCD_SDA 4
+
 #define LCD_FPS_TARGET 60
 
 #define SERIAL_BAUDS 115200
@@ -85,9 +95,10 @@
 // Note that you must use a font that supports this too for this to work.
 // #define DEC_SPECIAL_CHARACTER_SET
 
-// Use a full screen framebuffer. This is faster than a partial
-// buffer, but uses more RAM.
-// #define DISPLAY_BUFFER_FULL
+// Display buffer size: 1 for a single page, 2 for speedup using 2
+// pages, F for a full screen framebuffer. A full screen buffer is the
+// fastest option, but uses considerably more RAM.
+#define DISPLAY_BUFFER 1
 
 // Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
 // Note: Only available on the ESP platform
