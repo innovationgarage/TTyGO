@@ -4,9 +4,9 @@
 // ************************************************
 // **** Hardware mapping configuration  ***********
 // ************************************************
-#define BTN_LEFT 12
-#define BTN_MID 14
-#define BTN_RIGHT 13
+#define BTN_LEFT A2
+#define BTN_MID 7
+#define BTN_RIGHT A1
 
 #define BTN_DEBOUNCE_SPEED 40 // Debouncer: default 50 ms
 #define BTN_CLICK_SPEED 300 // Click: default 600 ms
@@ -15,26 +15,25 @@
 // Display and display controller
 // Check https://github.com/olikraus/u8g2/wiki/u8g2setupcpp#constructor-name
 // for names.
-#define DISPLAY_CONTROLLER SH1106 
+#define DISPLAY_CONTROLLER SSD1306
 #define DISPLAY_NAME 128X64_NONAME
-#define DISPLAY_COMM HW_I2C
+#define DISPLAY_COMM 4W_HW_SPI
 // Constructor arguments for the display controller
-#define DISPLAY_ARGS U8G2_R0, /* reset=*/ U8X8_PIN_NONE
+#define DISPLAY_ARGS U8G2_R0, /* cs=*/ 12, /* dc=*/ 4, /* reset=*/ 6
 
 #define LCD_CLK 5
 #define LCD_SDA 4
+
 #define LCD_FPS_TARGET 60
 
 #define SERIAL_BAUDS 115200
 
-// Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
-// Note: Only available on the ESP platform
 // Comment the line below to use the "fake" scheduler
-#define USE_ESP8266SCHEDULER
+//#define USE_ESP8266SCHEDULER
 
 // Uncomment on the ESP platform: ESP uses software I2C that needs
 // configuring at startup
-#define ESPI2C
+// #define ESPI2C
 
 // ************************************************
 // **** On Screen Keyboard configuration  *********
@@ -42,8 +41,8 @@
 
 // Check hardware mapping configuration for tunning the speed of they key repeats when holding and scrolling
 
-// Comment out to disable the on screen keyboard
-#define ON_SCREEN_KEYBOARD
+// Uncomment to enable the on screen keyboard
+// #define ON_SCREEN_KEYBOARD
 #define OSK_KEYS_TO_SHOW_PER_SIDE 4 // How many keys appear to the sides of the currently selected key in the OSK
 #define OSK_HOLD_DELAY 200 // Time for delaying the speedy scroll when holding a key: default 200
 #define OSK_HOLD_DELAY_ACCELERATION 30 // Acceleration of the scroll when holding: default 30
@@ -65,7 +64,7 @@
 // Length of UTF-8 multi-byte sequences to support. If 1, only ASCII
 // is supported. Max is 4.
 // Note that font support for your codepoints is also required!
-#define WIDECHAR 2
+#define WIDECHAR 1
 
 // Font from https://github.com/olikraus/u8g2/wiki/fntlistall
 #define LCD_FONT u8g2_font_4x6_mf
@@ -73,10 +72,10 @@
 // Should be >= u8g2.getDisplayWidth() / font.char_width
 #define TERMINAL_MAX_WIDTH 40
 // Should be >= u8g2.getDisplayHeight() / font.char_height
-#define TERMINAL_MAX_HEIGHT 24
+#define TERMINAL_MAX_HEIGHT 12
 
 // Max length of programmable button strings
-#define BUTTON_STRLEN 10
+#define BUTTON_STRLEN 5
 
 // Banner printed when the device boots. Note that it is strongly
 // recommended to start the banner by resetting the terminal using
@@ -94,11 +93,16 @@
 
 // Uncomment to support the DEC special character set (drawing characters)
 // Note that you must use a font that supports this too for this to work.
-#define DEC_SPECIAL_CHARACTER_SET
+// #define DEC_SPECIAL_CHARACTER_SET
 
-// Use a full screen framebuffer. This is faster than a partial
-// buffer, but uses more RAM.
-#define DISPLAY_BUFFER_FULL
+// Display buffer size: 1 for a single page, 2 for speedup using 2
+// pages, F for a full screen framebuffer. A full screen buffer is the
+// fastest option, but uses considerably more RAM.
+#define DISPLAY_BUFFER 1
+
+// Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
+// Note: Only available on the ESP platform
+// #define USE_ESP8266SCHEDULER
 
 // Comment out to only use the internal Arduino buffer of 64 bytes
 // Note: The draw loop takes ~50ms, and you need enough buffer to not
@@ -106,8 +110,5 @@
 // 12800bytes/s: 12800/64 = 200buffers/s: 1/200 = 0.005s/buffer.
 // that is, the Arduino buffer is filled in 5ms alone!
 #define SERIAL_BUFFER_SIZE 1024
-
-
-
 
 /* End build configuration */
