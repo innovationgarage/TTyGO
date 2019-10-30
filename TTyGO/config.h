@@ -18,12 +18,14 @@
 
 #define SERIAL_BAUDS 115200
 
+// Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
+// Note: Only available on the ESP platform
 // Comment the line below to use the "fake" scheduler
-//#define USE_ESP8266SCHEDULER
+#define USE_ESP8266SCHEDULER
 
 // Uncomment on the ESP platform: ESP uses software I2C that needs
 // configuring at startup
-// #define ESPI2C
+#define ESPI2C
 
 // ************************************************
 // **** On Screen Keyboard configuration  *********
@@ -31,8 +33,8 @@
 
 // Check hardware mapping configuration for tunning the speed of they key repeats when holding and scrolling
 
-// Uncomment to enable the on screen keyboard
-// #define ON_SCREEN_KEYBOARD
+// Comment out to disable the on screen keyboard
+#define ON_SCREEN_KEYBOARD
 #define OSK_KEYS_TO_SHOW_PER_SIDE 4 // How many keys appear to the sides of the currently selected key in the OSK
 #define OSK_HOLD_DELAY 200 // Time for delaying the speedy scroll when holding a key: default 200
 #define OSK_HOLD_DELAY_ACCELERATION 30 // Acceleration of the scroll when holding: default 30
@@ -54,7 +56,7 @@
 // Length of UTF-8 multi-byte sequences to support. If 1, only ASCII
 // is supported. Max is 4.
 // Note that font support for your codepoints is also required!
-#define WIDECHAR 1
+#define WIDECHAR 2
 
 // Font from https://github.com/olikraus/u8g2/wiki/fntlistall
 #define LCD_FONT u8g2_font_4x6_mf
@@ -62,10 +64,10 @@
 // Should be >= u8g2.getDisplayWidth() / font.char_width
 #define TERMINAL_MAX_WIDTH 40
 // Should be >= u8g2.getDisplayHeight() / font.char_height
-#define TERMINAL_MAX_HEIGHT 12
+#define TERMINAL_MAX_HEIGHT 24
 
 // Max length of programmable button strings
-#define BUTTON_STRLEN 5
+#define BUTTON_STRLEN 10
 
 // Banner printed when the device boots. Note that it is strongly
 // recommended to start the banner by resetting the terminal using
@@ -83,21 +85,20 @@
 
 // Uncomment to support the DEC special character set (drawing characters)
 // Note that you must use a font that supports this too for this to work.
-// #define DEC_SPECIAL_CHARACTER_SET
+#define DEC_SPECIAL_CHARACTER_SET
 
 // Use a full screen framebuffer. This is faster than a partial
 // buffer, but uses more RAM.
-// #define DISPLAY_BUFFER_FULL
-
-// Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
-// Note: Only available on the ESP platform
-// #define USE_ESP8266SCHEDULER
+#define DISPLAY_BUFFER_FULL
 
 // Comment out to only use the internal Arduino buffer of 64 bytes
 // Note: The draw loop takes ~50ms, and you need enough buffer to not
 // drop bytes during that time, e.g. at 115200baud 8N1: 115200/9 =
 // 12800bytes/s: 12800/64 = 200buffers/s: 1/200 = 0.005s/buffer.
 // that is, the Arduino buffer is filled in 5ms alone!
-// #define SERIAL_BUFFER_SIZE 1024
+#define SERIAL_BUFFER_SIZE 1024
+
+
+
 
 /* End build configuration */
