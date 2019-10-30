@@ -12,6 +12,15 @@
 #define BTN_CLICK_SPEED 300 // Click: default 600 ms
 #define BTN_PRESS_SPEED 500 // Long press: default 1000 ms
 
+// Display and display controller
+// Check https://github.com/olikraus/u8g2/wiki/u8g2setupcpp#constructor-name
+// for names.
+#define DISPLAY_CONTROLLER SH1106 
+#define DISPLAY_NAME 128X64_NONAME
+#define DISPLAY_COMM HW_I2C
+// Constructor arguments for the display controller
+#define DISPLAY_ARGS U8G2_R0, /* reset=*/ U8X8_PIN_NONE
+
 #define LCD_CLK 5
 #define LCD_SDA 4
 #define LCD_FPS_TARGET 60
