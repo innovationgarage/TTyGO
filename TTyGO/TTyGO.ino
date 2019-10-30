@@ -1,147 +1,43 @@
-#define VERSION "0.0.1"
-
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
-
-#include "config.h"
 #include <U8g2lib.h>
-#include <Wire.h>
 #include "OneButton.h"
 
-#ifdef USE_ESP8266SCHEDULER
-  #include <Scheduler.h> // ESP8266Scheduler
-#else
-  #include "scheduler.h"
-#endif
+U8G2_SSD1306_128X64_NONAME_1_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 12, /* dc=*/ 4, /* reset=*/ 6);  // Arduboy
 
-#ifdef FLASH_STRINGS
-  #define S(s) F(s)
-  #define S_len(s) strlen_P(s)
-  #define S_get(s, i) pgm_read_byte(s + i)
-#else
-  #define S(s) s
-  #define S_len(s) strlen(s)
-  #define S_get(s, i) (s[i])
-#endif
-
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
-
-// ASCII control characters recognised
-const char CR = '\r', LF = '\n', VT = '\v', BS = '\b', FF = '\f', ESC = '\e', NUL = '\0', CSI = '[';
-
-#define TERM(x, y) (terminal_buffer[(x - 1) + (y - 1)*terminal_width])
-
-#define BIT(arr, idx) ((arr[idx / 8] & (1 << (idx % 8))) >> (idx % 8))
-#define BIT_SET(arr, idx, val) (arr[idx / 8] = ((arr[idx / 8] & ~(1 << (idx % 8))) | (val << (idx % 8))))
-
-typedef struct {
-  int x;
-  int y;
-} Cursor;
-
-typedef struct {
-  int upper;
-  int lower;
-} ScrollRegion;
-
-typedef struct {
-  char a;
-  #if WIDECHAR > 1
-  char b;
-  #if WIDECHAR > 2
-  char c;
-  #if WIDECHAR > 3
-  char d;
-  #endif
-  #endif
-  #endif
-} Glyph;
-
-void terminal_cursor_move_to_tab(int next=1);
-
-void terminal_scroll(int start, int end, int up);
-void terminal_scroll_line(int y, int start, int end, int direction_left = 0);
-void terminal_clear_line(int x, int y, int mode =  2);
-
-void terminal_cursor_save();
-void terminal_cursor_restore();
-void terminal_setcursor(int col, int row);
-void terminal_draw();
-void terminal_clear(int mode = 2);
-void terminal_setup();
-void terminal_backspace();
-void terminal_newline();
-void terminal_put_glyph(Glyph g);
-void terminal_reset();
-
-void param_temp_buffer_digest(int default_value = 1);
-void param_temp_buffer_eat(char c);
-
-extern char charsets[4];
-extern char current_charset;
-// This is all set by the terminal_setup based on current font and display size
-extern ScrollRegion scroll_region;
-extern Cursor current_cursor, saved_cursor;
-extern unsigned char terminal_tab_stops[TERMINAL_MAX_WIDTH/8];
-extern int char_height, char_width,
-       terminal_width, terminal_height, display_height_offset, display_width_offset;
-extern Glyph terminal_buffer[TERMINAL_MAX_WIDTH * TERMINAL_MAX_HEIGHT];
-
-extern int newline_eating_mode;
-
-// Control sequences and internal buffers
-const int param_temp_buffer_max = 8;
-char param_temp_buffer[param_temp_buffer_max];
-int param_temp_buffer_pos = 0;
-
-const int control_sequence_param_max = 3;
-int control_sequence_param[control_sequence_param_max];
-int control_sequence_param_pos = 0;
+// ************************************************
+// **** Hardware mapping configuration  ***********
+// ************************************************
+#define BTN_LEFT A2
+#define BTN_DOWN A3
+#define BTN_RIGHT A1
+#define BTN_UP A0
+#define BTN_A 7
+#define BTN_B 8
 
 
-typedef void Function();
-typedef Function *(*State)(char c);
-
-const int debug_parsing = 0;
-
-State initial_state(char c);
-State parse_utf_8_sequence(char c);
-State command_mode(char c);
-State designate_g0(char c);
-State designate_g1(char c);
-State designate_g2(char c);
-State designate_g3(char c);
-State control_sequence(char c);
-State control_sequence_entry(char c);
-State device_control(char c);
-State device_control_dummy_entry_1(char c);
-State device_control_dummy_entry_2(char c);
-State device_control_entry_btn(char c);
-State device_control_entry_str(char c);
-
-
-char *dec_special_character_set(unsigned char c);
-
-void serial_print_glyph(Glyph g);
-
-void reset_buttons();
-void reset_button(int i);
-
-bool lcd_dirty = true; // invoke a redraw
-
-void serial_print_glyph(Glyph g) {
-  Serial.print(g.a);
-  #if WIDECHAR > 1
-  if (g.b != NUL) Serial.print(g.b);
-  #if WIDECHAR > 2
-  if (g.c != NUL) Serial.print(g.c);
-  #if WIDECHAR > 3
-  if (g.d != NUL) Serial.print(g.d);
-  #endif
-  #endif
-  #endif
+void setup()
+{
+  u8g2.begin();
+  attach_buttons();
 }
 
-void buffer_serial();
-char serial_buffer_data_available();
-int serial_buffer_get();
+OneButton button_left(BTN_LEFT, true), button_down(BTN_DOWN, true), button_right(BTN_RIGHT, true), button_up(BTN_UP, true), button_a(BTN_A, true), button_b(BTN_B, true);
+
+int x = 0, y = 15;
+void loop()
+{
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_ncenB14_tr);
+    u8g2.drawStr(x,y,"Hello Egil");
+  } while ( u8g2.nextPage() );
+
+  // Check buttons
+  button_left.tick();
+  button_down.tick();
+  button_right.tick();
+  button_up.tick();
+  button_a.tick();
+  button_b.tick();
+
+  delay(10);
+}
