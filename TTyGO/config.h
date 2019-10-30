@@ -19,8 +19,11 @@
 #define SERIAL_BAUDS 115200
 
 // Comment the line below to use the "fake" scheduler
-#define USE_ESP8266SCHEDULER
+//#define USE_ESP8266SCHEDULER
 
+// Uncomment on the ESP platform: ESP uses software I2C that needs
+// configuring at startup
+// #define ESPI2C
 
 // ************************************************
 // **** On Screen Keyboard configuration  *********
@@ -49,7 +52,7 @@
 // Length of UTF-8 multi-byte sequences to support. If 1, only ASCII
 // is supported. Max is 4.
 // Note that font support for your codepoints is also required!
-#define WIDECHAR 2
+#define WIDECHAR 1
 
 // Font from https://github.com/olikraus/u8g2/wiki/fntlistall
 #define LCD_FONT u8g2_font_4x6_mf
@@ -57,10 +60,10 @@
 // Should be >= u8g2.getDisplayWidth() / font.char_width
 #define TERMINAL_MAX_WIDTH 40
 // Should be >= u8g2.getDisplayHeight() / font.char_height
-#define TERMINAL_MAX_HEIGHT 24
+#define TERMINAL_MAX_HEIGHT 12
 
 // Max length of programmable button strings
-#define BUTTON_STRLEN 10
+#define BUTTON_STRLEN 5
 
 // Banner printed when the device boots. Note that it is strongly
 // recommended to start the banner by resetting the terminal using
@@ -76,10 +79,19 @@
 
 #define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
 
+// Use a full screen framebuffer. This is faster than a partial
+// buffer, but uses more RAM.
+// #define DISPLAY_BUFFER_FULL
+
 // Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
 // Note: Only available on the ESP platform
 // #define USE_ESP8266SCHEDULER
 
-#define SERIAL_BUFFER_SIZE 1024
+// Comment out to only use the internal Arduino buffer of 64 bytes
+// Note: The draw loop takes ~50ms, and you need enough buffer to not
+// drop bytes during that time, e.g. at 115200baud 8N1: 115200/9 =
+// 12800bytes/s: 12800/64 = 200buffers/s: 1/200 = 0.005s/buffer.
+// that is, the Arduino buffer is filled in 5ms alone!
+// #define SERIAL_BUFFER_SIZE 1024
 
 /* End build configuration */

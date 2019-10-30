@@ -4,8 +4,10 @@ void loop(void) {
 
 void setup(void)
 {
-  // change hardware I2C pins to (5,4) (D1,D2)
-  Wire.begin(LCD_CLK, LCD_SDA);
+  #ifdef ESPI2C
+    // change hardware I2C pins to (5,4) (D1,D2)
+    Wire.begin(LCD_CLK, LCD_SDA);
+  #endif
 
   /* Start the serial port already here so that debug prints work even
      during startup of non-serial tasks... */

@@ -1,3 +1,9 @@
+// Sets the terminal cursor to the proper col and row, based on 1
+void terminal_setcursor(int col, int row)
+{
+  u8g2.setCursor(display_width_offset + char_width * (col - 1), display_height_offset + char_height * row);
+}
+
 // Draws terminal to the lcd
 void terminal_draw()
 {
@@ -31,17 +37,24 @@ void terminal_draw()
 // Draws the screen
 void screen_draw()
 {
-  u8g2.clearBuffer();
-  terminal_draw();
+  #ifdef DISPLAY_BUFFER_FULL
+    u8g2.clearBuffer();
 
-  // Other elements on top
-  if (osk_visible)
-    osk_draw();
+    terminal_draw();
+    if (osk_visible) osk_draw();
 
-  for (uint8_t y = 0; y < u8g2.getBufferTileHeight(); y++) {
-    u8g2.updateDisplayArea(0, y, u8g2.getBufferTileWidth(), 1);
-    buffer_serial();
-  }
+    for (uint8_t y = 0; y < u8g2.getBufferTileHeight(); y++) {
+      u8g2.updateDisplayArea(0, y, u8g2.getBufferTileWidth(), 1);
+      buffer_serial();
+    }
+  #else
+    u8g2.firstPage();
+    do {
+      terminal_draw();
+      if (osk_visible) osk_draw();
+      buffer_serial();
+    } while (u8g2.nextPage());
+  #endif
 }
 
 class ScreenTask : public Task {

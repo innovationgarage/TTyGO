@@ -89,12 +89,6 @@ void terminal_cursor_restore() {
   current_cursor = saved_cursor;
 }
 
-// Sets the terminal cursor to the proper col and row, based on 1
-void terminal_setcursor(int col, int row)
-{
-  u8g2.setCursor(display_width_offset + char_width * (col - 1), display_height_offset + char_height * row);
-}
-
 // Clears the char buffer
 void terminal_clear(int mode)
 {
