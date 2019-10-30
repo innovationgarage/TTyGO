@@ -79,6 +79,10 @@
 
 #define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
 
+// Uncomment to support the DEC special character set (drawing characters)
+// Note that you must use a font that supports this too for this to work.
+// #define DEC_SPECIAL_CHARACTER_SET
+
 // Use a full screen framebuffer. This is faster than a partial
 // buffer, but uses more RAM.
 // #define DISPLAY_BUFFER_FULL

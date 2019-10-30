@@ -42,6 +42,7 @@ State initial_state(char c) {
     default:
       switch (charsets[current_charset])
       {
+        #ifdef DEC_SPECIAL_CHARACTER_SET
         case '0':
           for(conversion_str = dec_special_character_set(c); conversion_str && *conversion_str; conversion_str++) {
             parse_utf_8_sequence(*conversion_str);
@@ -50,7 +51,7 @@ State initial_state(char c) {
             parse_utf_8_sequence(c);
           }
           return (State) &initial_state;
-
+        #endif
         // case '@': // Bzzt WRONG! For this we should do ISO 8859-1 translation, but we won't. Mwahahaha
         // case 'G':
         // case 'B':
