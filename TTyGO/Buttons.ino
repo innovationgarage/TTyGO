@@ -66,8 +66,11 @@ void button_middle_click()
 // ESC
 void button_middle_hold()
 {
-  //Serial.print(buttons[3]);
-  osk_show();
+  #ifdef ON_SCREEN_KEYBOARD
+    osk_show();
+  #else
+    Serial.print(buttons[3]);
+  #endif
 }
 
 // Cursor down

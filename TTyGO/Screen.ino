@@ -41,7 +41,9 @@ void screen_draw()
     u8g2.clearBuffer();
 
     terminal_draw();
-    if (osk_visible) osk_draw();
+    #ifdef ON_SCREEN_KEYBOARD
+      if (osk_visible) osk_draw();
+    #endif
 
     for (uint8_t y = 0; y < u8g2.getBufferTileHeight(); y++) {
       u8g2.updateDisplayArea(0, y, u8g2.getBufferTileWidth(), 1);
@@ -51,7 +53,9 @@ void screen_draw()
     u8g2.firstPage();
     do {
       terminal_draw();
-      if (osk_visible) osk_draw();
+      #ifdef ON_SCREEN_KEYBOARD
+        if (osk_visible) osk_draw();
+      #endif
       buffer_serial();
     } while (u8g2.nextPage());
   #endif

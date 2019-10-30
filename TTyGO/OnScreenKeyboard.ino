@@ -1,3 +1,4 @@
+#ifdef ON_SCREEN_KEYBOARD
 #include "utilities.h"
 
 const byte osk_key_size_in_chars = 4, osk_key_code_size_in_chars = 4;
@@ -194,3 +195,4 @@ void osk_hide()
   osk_current_mode = OSK_CLOSE;
   deatach_buttons ();
 }
+#endif

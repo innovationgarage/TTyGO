@@ -31,6 +31,8 @@
 
 // Check hardware mapping configuration for tunning the speed of they key repeats when holding and scrolling
 
+// Uncomment to enable the on screen keyboard
+// #define ON_SCREEN_KEYBOARD
 #define OSK_KEYS_TO_SHOW_PER_SIDE 4 // How many keys appear to the sides of the currently selected key in the OSK
 #define OSK_HOLD_DELAY 200 // Time for delaying the speedy scroll when holding a key: default 200
 #define OSK_HOLD_DELAY_ACCELERATION 30 // Acceleration of the scroll when holding: default 30
