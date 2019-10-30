@@ -37,7 +37,12 @@ void terminal_draw()
 // Draws the screen
 void screen_draw()
 {
-  #ifdef DISPLAY_BUFFER_FULL
+  #define APPEND(a, b) a ## b
+  #define EVAL(a, b) APPEND(a, b)
+  #define DISPLAY_BUFFER_1 1
+  #define DISPLAY_BUFFER_2 2
+  #define DISPLAY_BUFFER_F 3
+  #if EVAL(DISPLAY_BUFFER_, DISPLAY_BUFFER) == 3
     u8g2.clearBuffer();
 
     terminal_draw();
