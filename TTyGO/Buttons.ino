@@ -1,4 +1,6 @@
+#define BUTTON(pin, active) OneButton(pin, active),
 OneButton phys_buttons[] = {BUTTONS};
+#undef BUTTON
 const size_t phys_buttons_nr = sizeof(phys_buttons) / sizeof(OneButton);
 
 // UP LEFT ENTER ESC DOWN RIGHT
@@ -38,6 +40,24 @@ void reset_button(int i)
   strcpy(buttons[i], p);
 #endif
 }
+
+callbackFunction button_callbacks[buttons_nr];
+class ButtonCallback {
+public:
+  ButtonCallback(int id, void (*fp)( void )) {
+    button_callbacks[id] = fp;
+  }
+};
+
+enum { BUTTON_COUNTER_BASE = __COUNTER__ };
+
+#define BUTTON_DEF1(ctr) void button_ ## ctr ## _callback() { Serial.print(buttons[ctr - BUTTON_COUNTER_BASE]); } \
+ButtonCallback bc ## ctr = ButtonCallback(ctr - BUTTON_COUNTER_BASE, &button_ ## ctr ## _callback);
+#define BUTTON_DEF(ctr) BUTTON_DEF1(ctr)
+#define BUTTON(pin, active) BUTTON_DEF(__COUNTER__)
+BUTTONS
+BUTTONS
+#undef BUTTON
 
 void button_left_click()
 {
