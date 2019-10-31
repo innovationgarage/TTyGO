@@ -1,4 +1,5 @@
-OneButton button_left(BTN_LEFT, true), button_middle(BTN_MID, true), button_right(BTN_RIGHT, true);
+OneButton phys_buttons[] = {OneButton(BTN_LEFT, true), OneButton(BTN_MID, true), OneButton(BTN_RIGHT, true)};
+const size_t phys_buttons_nr = sizeof(phys_buttons) / sizeof(OneButton);
 
 // UP LEFT ENTER ESC DOWN RIGHT
 char buttons[6][BUTTON_STRLEN];
@@ -6,19 +7,19 @@ char buttons[6][BUTTON_STRLEN];
 void reset_buttons()
 {
   // Change the tick speed for detecting single clicks
-  button_left.setClickTicks(BTN_CLICK_SPEED);
-  button_middle.setClickTicks(BTN_CLICK_SPEED);
-  button_right.setClickTicks(BTN_CLICK_SPEED);
+  phys_buttons[0].setClickTicks(BTN_CLICK_SPEED);
+  phys_buttons[1].setClickTicks(BTN_CLICK_SPEED);
+  phys_buttons[2].setClickTicks(BTN_CLICK_SPEED);
 
   // Change the tick speed for the long hold detection
-  button_left.setPressTicks(BTN_PRESS_SPEED);
-  button_middle.setPressTicks(BTN_PRESS_SPEED);
-  button_right.setPressTicks(BTN_PRESS_SPEED);
+  phys_buttons[0].setPressTicks(BTN_PRESS_SPEED);
+  phys_buttons[1].setPressTicks(BTN_PRESS_SPEED);
+  phys_buttons[2].setPressTicks(BTN_PRESS_SPEED);
 
   // Change the tick speed for detection of a click as "safe"
-  button_left.setDebounceTicks(BTN_DEBOUNCE_SPEED);
-  button_middle.setDebounceTicks(BTN_DEBOUNCE_SPEED);
-  button_right.setDebounceTicks(BTN_DEBOUNCE_SPEED);
+  phys_buttons[0].setDebounceTicks(BTN_DEBOUNCE_SPEED);
+  phys_buttons[1].setDebounceTicks(BTN_DEBOUNCE_SPEED);
+  phys_buttons[2].setDebounceTicks(BTN_DEBOUNCE_SPEED);
 
   for (int i = 0; i < 6; i++)
     reset_button(i);
@@ -88,18 +89,18 @@ void button_right_hold()
 // Just clears all button callbacks
 void deatach_buttons()
 {
-  button_left.attachClick(NULL);
-  button_left.attachLongPressStart(NULL);
-  button_left.attachDuringLongPress(NULL);
-  button_left.attachLongPressStop(NULL);
-  button_middle.attachClick(NULL);
-  button_middle.attachLongPressStart(NULL);
-  button_left.attachDuringLongPress(NULL);
-  button_middle.attachLongPressStop(NULL);
-  button_right.attachClick(NULL);
-  button_right.attachLongPressStart(NULL);
-  button_right.attachDuringLongPress(NULL);
-  button_right.attachLongPressStop(NULL);
+  phys_buttons[0].attachClick(NULL);
+  phys_buttons[0].attachLongPressStart(NULL);
+  phys_buttons[0].attachDuringLongPress(NULL);
+  phys_buttons[0].attachLongPressStop(NULL);
+  phys_buttons[1].attachClick(NULL);
+  phys_buttons[1].attachLongPressStart(NULL);
+  phys_buttons[0].attachDuringLongPress(NULL);
+  phys_buttons[1].attachLongPressStop(NULL);
+  phys_buttons[2].attachClick(NULL);
+  phys_buttons[2].attachLongPressStart(NULL);
+  phys_buttons[2].attachDuringLongPress(NULL);
+  phys_buttons[2].attachLongPressStop(NULL);
 }
 
 void attach_buttons()
@@ -107,12 +108,12 @@ void attach_buttons()
   deatach_buttons();
 
   // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
-  button_left.attachClick(button_left_click);
-  button_left.attachLongPressStart(button_left_hold);
-  button_middle.attachClick(button_middle_click);
-  button_middle.attachLongPressStart(button_middle_hold);
-  button_right.attachClick(button_right_click);
-  button_right.attachLongPressStart(button_right_hold);
+  phys_buttons[0].attachClick(button_left_click);
+  phys_buttons[0].attachLongPressStart(button_left_hold);
+  phys_buttons[1].attachClick(button_middle_click);
+  phys_buttons[1].attachLongPressStart(button_middle_hold);
+  phys_buttons[2].attachClick(button_right_click);
+  phys_buttons[2].attachLongPressStart(button_right_hold);
 }
 
 // Task for the buttons
@@ -127,9 +128,9 @@ class KeyboardTask : public Task {
     void loop()
     {
       // Check buttons
-      button_left.tick();
-      button_middle.tick();
-      button_right.tick();
+      phys_buttons[0].tick();
+      phys_buttons[1].tick();
+      phys_buttons[2].tick();
       delay(10);
     }
 } keyboard_task;

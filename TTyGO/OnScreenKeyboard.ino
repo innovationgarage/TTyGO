@@ -180,14 +180,14 @@ void button_osk_left_hold()
 void attach_osk_buttons()
 {
   // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
-  button_left.attachClick(button_osk_left_click);
-  button_left.attachLongPressStart(button_osk_hold_start);
-  button_left.attachDuringLongPress(button_osk_left_hold);
-  button_middle.attachClick(button_osk_middle_click);
-  button_middle.attachLongPressStart(button_osk_middle_hold);
-  button_right.attachClick(button_osk_right_click);
-  button_right.attachLongPressStart(button_osk_hold_start);
-  button_right.attachDuringLongPress(button_osk_right_hold);
+  phys_buttons[0].attachClick(button_osk_left_click);
+  phys_buttons[0].attachLongPressStart(button_osk_hold_start);
+  phys_buttons[0].attachDuringLongPress(button_osk_left_hold);
+  phys_buttons[1].attachClick(button_osk_middle_click);
+  phys_buttons[1].attachLongPressStart(button_osk_middle_hold);
+  phys_buttons[2].attachClick(button_osk_right_click);
+  phys_buttons[2].attachLongPressStart(button_osk_hold_start);
+  phys_buttons[2].attachDuringLongPress(button_osk_right_hold);
 }
 
 void osk_show()
