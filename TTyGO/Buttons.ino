@@ -3,9 +3,36 @@ OneButton phys_buttons[] = {BUTTONS};
 #undef BUTTON
 const size_t phys_buttons_nr = sizeof(phys_buttons) / sizeof(OneButton);
 
-// UP LEFT ENTER ESC DOWN RIGHT
+// Button bindings
 const size_t buttons_nr = phys_buttons_nr * 2;
 char buttons[buttons_nr][BUTTON_STRLEN];
+
+// OneButton does not let us use the same callback function for all
+// buttons and just send the button index as a parameter.
+// So we need to generate buttons_nr unique callback functions and
+// stick their pointers in an array. For this we use a trick described
+// here:
+// http://blog.aaronballman.com/2011/12/stupid-compiler-tricks/
+callbackFunction button_callbacks[buttons_nr];
+class ButtonCallback {
+public:
+  ButtonCallback(int id, void (*fp)( void )) {
+    button_callbacks[id] = fp;
+  }
+};
+
+enum { BUTTON_COUNTER_BASE = __COUNTER__ + 1};
+
+#define BUTTON_DEF1(ctr) void button_ ## ctr ## _callback() { Serial.print(buttons[ctr - BUTTON_COUNTER_BASE]); Serial.flush(); } \
+ButtonCallback bc ## ctr = ButtonCallback(ctr - BUTTON_COUNTER_BASE, &button_ ## ctr ## _callback);
+
+#define BUTTON_DEF(ctr) BUTTON_DEF1(ctr)
+#define BUTTON(pin, active) BUTTON_DEF(__COUNTER__)
+// Twice, as each button has both a click and hold callback
+BUTTONS
+BUTTONS
+#undef BUTTON
+
 
 void reset_buttons()
 {
@@ -41,62 +68,6 @@ void reset_button(int i)
 #endif
 }
 
-callbackFunction button_callbacks[buttons_nr];
-class ButtonCallback {
-public:
-  ButtonCallback(int id, void (*fp)( void )) {
-    button_callbacks[id] = fp;
-  }
-};
-
-enum { BUTTON_COUNTER_BASE = __COUNTER__ };
-
-#define BUTTON_DEF1(ctr) void button_ ## ctr ## _callback() { Serial.print(buttons[ctr - BUTTON_COUNTER_BASE]); } \
-ButtonCallback bc ## ctr = ButtonCallback(ctr - BUTTON_COUNTER_BASE, &button_ ## ctr ## _callback);
-#define BUTTON_DEF(ctr) BUTTON_DEF1(ctr)
-#define BUTTON(pin, active) BUTTON_DEF(__COUNTER__)
-BUTTONS
-BUTTONS
-#undef BUTTON
-
-void button_left_click()
-{
-  Serial.print(buttons[0]);
-}
-
-void button_left_hold()
-{
-  Serial.print(buttons[1]);
-}
-
-// Enter
-void button_middle_click()
-{
-  Serial.print(buttons[2]);
-}
-
-// ESC
-void button_middle_hold()
-{
-  #ifdef ON_SCREEN_KEYBOARD
-    osk_show();
-  #else
-    Serial.print(buttons[3]);
-  #endif
-}
-
-// Cursor down
-void button_right_click()
-{
-  Serial.print(buttons[4]);
-}
-
-// Cursor right
-void button_right_hold()
-{
-  Serial.print(buttons[5]);
-}
-
 // Just clears all button callbacks
 void deatach_buttons()
 {
@@ -113,12 +84,13 @@ void attach_buttons()
   deatach_buttons();
 
   // Set buttons (all supported modes: https://github.com/mathertel/OneButton/blob/master/examples/TwoButtons/TwoButtons.ino )
-  phys_buttons[0].attachClick(button_left_click);
-  phys_buttons[0].attachLongPressStart(button_left_hold);
-  phys_buttons[1].attachClick(button_middle_click);
-  phys_buttons[1].attachLongPressStart(button_middle_hold);
-  phys_buttons[2].attachClick(button_right_click);
-  phys_buttons[2].attachLongPressStart(button_right_hold);
+  for (size_t i = 0; i < phys_buttons_nr; i++) {
+    phys_buttons[i].attachClick(button_callbacks[i * 2]);
+    phys_buttons[i].attachLongPressStart(button_callbacks[i * 2 + 1]);
+  }
+  #ifdef ON_SCREEN_KEYBOARD
+    phys_buttons[1].attachLongPressStart(&osk_show);
+  #endif
 }
 
 // Task for the buttons
