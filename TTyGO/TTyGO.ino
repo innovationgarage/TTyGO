@@ -1,4 +1,4 @@
-#define VERSION "0.0.1"
+#define VERSION "0.0.2"
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)

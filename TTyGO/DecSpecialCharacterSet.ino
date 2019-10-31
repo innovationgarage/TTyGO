@@ -1,4 +1,4 @@
-#ifdef DEC_SPECIAL_CHARACTER_SET
+#if DEC_SPECIAL_CHARACTER_SET > 0
 char *dec_special_character_set(unsigned char c) {
   // Map the DEC Special Graphics Character Set to UTF-8
   // Source of this mapping: http://fileformats.archiveteam.org/wiki/DEC_Special_Graphics_Character_Set

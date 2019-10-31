@@ -1,4 +1,4 @@
-#ifdef SERIAL_BUFFER_SIZE
+#if SERIAL_BUFFER_SIZE > 0
   char serial_buffer[SERIAL_BUFFER_SIZE];
   int serial_buffer_write_pos = 0;
   int serial_buffer_read_pos = 0;
@@ -28,7 +28,7 @@
   }
 
 #else
-  #define buffer_serial() {}
-  #define serial_buffer_data_available() Serial.available()
-  #define serial_buffer_get() Serial.read()
+  void buffer_serial() {}
+  inline char serial_buffer_data_available() { return Serial.available(); }
+  inline int serial_buffer_get() { return Serial.read(); }
 #endif

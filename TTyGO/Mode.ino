@@ -42,7 +42,7 @@ State initial_state(char c) {
     default:
       switch (charsets[current_charset])
       {
-        #ifdef DEC_SPECIAL_CHARACTER_SET
+        #if DEC_SPECIAL_CHARACTER_SET > 0
         case '0':
           for(conversion_str = dec_special_character_set(c); conversion_str && *conversion_str; conversion_str++) {
             parse_utf_8_sequence(*conversion_str);
