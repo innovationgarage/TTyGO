@@ -4,9 +4,9 @@
 // ************************************************
 // **** Hardware mapping configuration  ***********
 // ************************************************
-#define BTN_LEFT A2
-#define BTN_MID 7
-#define BTN_RIGHT A1
+
+// Up, A, Down, Left, Right, B
+#define BUTTONS BUTTON(A0, true) BUTTON(7, true) BUTTON(A3, true) BUTTON(A2, true) BUTTON(A1, true) BUTTON(8, true)
 
 #define BTN_DEBOUNCE_SPEED 40 // Debouncer: default 50 ms
 #define BTN_CLICK_SPEED 300 // Click: default 600 ms
