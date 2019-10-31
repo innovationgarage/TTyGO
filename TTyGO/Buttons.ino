@@ -2,26 +2,17 @@ OneButton phys_buttons[] = {OneButton(BTN_LEFT, true), OneButton(BTN_MID, true),
 const size_t phys_buttons_nr = sizeof(phys_buttons) / sizeof(OneButton);
 
 // UP LEFT ENTER ESC DOWN RIGHT
-char buttons[6][BUTTON_STRLEN];
+const size_t buttons_nr = phys_buttons_nr * 2;
+char buttons[buttons_nr][BUTTON_STRLEN];
 
 void reset_buttons()
 {
-  // Change the tick speed for detecting single clicks
-  phys_buttons[0].setClickTicks(BTN_CLICK_SPEED);
-  phys_buttons[1].setClickTicks(BTN_CLICK_SPEED);
-  phys_buttons[2].setClickTicks(BTN_CLICK_SPEED);
-
-  // Change the tick speed for the long hold detection
-  phys_buttons[0].setPressTicks(BTN_PRESS_SPEED);
-  phys_buttons[1].setPressTicks(BTN_PRESS_SPEED);
-  phys_buttons[2].setPressTicks(BTN_PRESS_SPEED);
-
-  // Change the tick speed for detection of a click as "safe"
-  phys_buttons[0].setDebounceTicks(BTN_DEBOUNCE_SPEED);
-  phys_buttons[1].setDebounceTicks(BTN_DEBOUNCE_SPEED);
-  phys_buttons[2].setDebounceTicks(BTN_DEBOUNCE_SPEED);
-
-  for (int i = 0; i < 6; i++)
+  for (size_t i = 0; i < phys_buttons_nr; i++) {
+    phys_buttons[i].setClickTicks(BTN_CLICK_SPEED);
+    phys_buttons[i].setPressTicks(BTN_PRESS_SPEED);
+    phys_buttons[i].setDebounceTicks(BTN_DEBOUNCE_SPEED);
+  }
+  for (int i = 0; i < buttons_nr; i++)
     reset_button(i);
 }
 
@@ -89,18 +80,12 @@ void button_right_hold()
 // Just clears all button callbacks
 void deatach_buttons()
 {
-  phys_buttons[0].attachClick(NULL);
-  phys_buttons[0].attachLongPressStart(NULL);
-  phys_buttons[0].attachDuringLongPress(NULL);
-  phys_buttons[0].attachLongPressStop(NULL);
-  phys_buttons[1].attachClick(NULL);
-  phys_buttons[1].attachLongPressStart(NULL);
-  phys_buttons[0].attachDuringLongPress(NULL);
-  phys_buttons[1].attachLongPressStop(NULL);
-  phys_buttons[2].attachClick(NULL);
-  phys_buttons[2].attachLongPressStart(NULL);
-  phys_buttons[2].attachDuringLongPress(NULL);
-  phys_buttons[2].attachLongPressStop(NULL);
+  for (size_t i = 0; i < phys_buttons_nr; i++) {
+    phys_buttons[i].attachClick(NULL);
+    phys_buttons[i].attachLongPressStart(NULL);
+    phys_buttons[i].attachDuringLongPress(NULL);
+    phys_buttons[i].attachLongPressStop(NULL);
+  }
 }
 
 void attach_buttons()
@@ -128,9 +113,9 @@ class KeyboardTask : public Task {
     void loop()
     {
       // Check buttons
-      phys_buttons[0].tick();
-      phys_buttons[1].tick();
-      phys_buttons[2].tick();
+      for (size_t i = 0; i < phys_buttons_nr; i++) {
+        phys_buttons[i].tick();
+      }
       delay(10);
     }
 } keyboard_task;

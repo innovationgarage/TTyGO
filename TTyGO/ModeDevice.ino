@@ -57,7 +57,7 @@ State device_control_entry_btn(char c)
 
     default:
       dcs_btn = dcs_btn * 10 + (c - '0'); // Parse key index
-      dcs_btn = dcs_btn % 6; // Should be a define of how many buttons we have...
+      dcs_btn = dcs_btn % buttons_nr;
       return (State) &device_control_entry_btn;
   }
 }

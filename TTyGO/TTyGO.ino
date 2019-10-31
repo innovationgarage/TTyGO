@@ -134,6 +134,10 @@ void serial_print_glyph(Glyph g);
 
 void reset_buttons();
 void reset_button(int i);
+extern OneButton phys_buttons[];
+extern const size_t phys_buttons_nr;
+extern const size_t buttons_nr;
+extern char buttons[][BUTTON_STRLEN];
 
 bool lcd_dirty = true; // invoke a redraw
 
