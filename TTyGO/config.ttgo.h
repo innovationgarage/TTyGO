@@ -96,9 +96,10 @@
 // Note that you must use a font that supports this too for this to work.
 #define DEC_SPECIAL_CHARACTER_SET
 
-// Use a full screen framebuffer. This is faster than a partial
-// buffer, but uses more RAM.
-#define DISPLAY_BUFFER_FULL
+// Display buffer size: 1 for a single page, 2 for speedup using 2
+// pages, F for a full screen framebuffer. A full screen buffer is the
+// fastest option, but uses considerably more RAM.
+#define DISPLAY_BUFFER F
 
 // Comment out to only use the internal Arduino buffer of 64 bytes
 // Note: The draw loop takes ~50ms, and you need enough buffer to not
