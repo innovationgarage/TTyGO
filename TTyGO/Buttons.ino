@@ -2,7 +2,7 @@ const char button_initial_binding[][BUTTON_STRLEN]
 #ifdef FLASH_STRINGS
  PROGMEM
 #endif
-= {"\x1b[A", "\x1b[C", "\n", "\x1b", "\x1b[B", "\x1b[D"};
+= {BUTTON_BINDINGS};
 
 #define BUTTON(pin, active) OneButton(pin, active),
 OneButton phys_buttons[] = {BUTTONS};
@@ -85,7 +85,7 @@ void attach_buttons()
     phys_buttons[i].attachLongPressStart(button_callbacks[i * 2 + 1]);
   }
   #ifdef ON_SCREEN_KEYBOARD
-    phys_buttons[1].attachLongPressStart(&osk_show);
+    phys_buttons[ON_SCREEN_KEYBOARD].attachLongPressStart(&osk_show);
   #endif
 }
 

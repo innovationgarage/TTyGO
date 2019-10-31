@@ -5,6 +5,10 @@
 // **** Hardware mapping configuration  ***********
 // ************************************************
 
+// Hardware button mappings. Arguments are the same as for the
+// OneButton() constructor.
+// Each of these defines two programmable function keys: One for short
+// click, one for long click.
 // Up, A, Down, Left, Right, B
 #define BUTTONS BUTTON(A0, true) BUTTON(7, true) BUTTON(A3, true) BUTTON(A2, true) BUTTON(A1, true) BUTTON(8, true)
 
@@ -41,8 +45,9 @@
 
 // Check hardware mapping configuration for tunning the speed of they key repeats when holding and scrolling
 
-// Uncomment to enable the on screen keyboard
-// #define ON_SCREEN_KEYBOARD
+// Comment out to disable the on screen keyboard
+// Set to button index to bring up the OSK
+#define ON_SCREEN_KEYBOARD 1
 #define OSK_KEYS_TO_SHOW_PER_SIDE 4 // How many keys appear to the sides of the currently selected key in the OSK
 #define OSK_HOLD_DELAY 200 // Time for delaying the speedy scroll when holding a key: default 200
 #define OSK_HOLD_DELAY_ACCELERATION 30 // Acceleration of the scroll when holding: default 30
@@ -110,5 +115,9 @@
 // 12800bytes/s: 12800/64 = 200buffers/s: 1/200 = 0.005s/buffer.
 // that is, the Arduino buffer is filled in 5ms alone!
 // #define SERIAL_BUFFER_SIZE 1024
+
+// Initial button bindings
+// Strings for btn1 short click, btn 1 long click, btn2 short click, btn2 long click...
+#define BUTTON_BINDINGS "\x1b[A", "\x1b[C", "\n", "\x1b", "\x1b[B", "\x1b[D" 
 
 /* End build configuration */
