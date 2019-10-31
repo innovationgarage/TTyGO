@@ -1,3 +1,9 @@
+const char button_initial_binding[][BUTTON_STRLEN]
+#ifdef FLASH_STRINGS
+ PROGMEM
+#endif
+= {"\x1b[A", "\x1b[C", "\n", "\x1b", "\x1b[B", "\x1b[D"};
+
 #define BUTTON(pin, active) OneButton(pin, active),
 OneButton phys_buttons[] = {BUTTONS};
 #undef BUTTON
@@ -47,25 +53,15 @@ void reset_buttons()
 
 void reset_button(int i)
 {
-#ifdef FLASH_STRINGS
-  const __FlashStringHelper *p;
-#else
-  const char *p;
-#endif
-  switch (i)
-  {
-    case 0: p = S("\x1b[A"); break;
-    case 1: p = S("\x1b[C"); break;
-    case 2: p = S("\n"); break;
-    case 3: p = S("\x1b"); break;
-    case 4: p = S("\x1b[B"); break;
-    case 5: p = S("\x1b[D"); break;
+  if (i >= sizeof(button_initial_binding) / sizeof(char *)) {
+    buttons[i][0] = NUL;
+  } else {
+    #ifdef FLASH_STRINGS
+      strcpy_P(buttons[i], button_initial_binding[i]);
+    #else
+      strcpy(buttons[i], button_initial_binding[i]);
+    #endif
   }
-#ifdef FLASH_STRINGS
-  strcpy_P(buttons[i], (PGM_P) p);
-#else
-  strcpy(buttons[i], p);
-#endif
 }
 
 // Just clears all button callbacks
