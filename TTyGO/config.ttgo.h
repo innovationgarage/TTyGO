@@ -5,7 +5,7 @@
 // **** Hardware mapping configuration  ***********
 // ************************************************
 
-#define BUTTONS OneButton(12, true), OneButton(14, true), OneButton(13, true)
+#define BUTTONS BUTTON(12, true) BUTTON(14, true) BUTTON(13, true)
 
 #define BTN_DEBOUNCE_SPEED 40 // Debouncer: default 50 ms
 #define BTN_CLICK_SPEED 300 // Click: default 600 ms
