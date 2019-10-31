@@ -1,4 +1,4 @@
-OneButton phys_buttons[] = {OneButton(BTN_LEFT, true), OneButton(BTN_MID, true), OneButton(BTN_RIGHT, true)};
+OneButton phys_buttons[] = {BUTTONS};
 const size_t phys_buttons_nr = sizeof(phys_buttons) / sizeof(OneButton);
 
 // UP LEFT ENTER ESC DOWN RIGHT
