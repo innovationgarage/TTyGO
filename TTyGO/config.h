@@ -62,7 +62,9 @@
 #define BANNER ""
 #endif
 
-#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION "\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
+#define str(s) str2(s)
+#define str2(s) #s
+#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION " " str(SERIAL_BAUDS) "bps\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
 
 // Set to 1 to enable the DEC special character set (drawing characters)
 // Note that you must use a font that supports this too for this to work.

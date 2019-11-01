@@ -43,7 +43,7 @@
 // ************************************************
 
 #define DEFAULT_WIDECHAR 2
-#define DEFAULT_TERMINAL_MAX_WIDTH 24
+#define DEFAULT_TERMINAL_MAX_WIDTH 40
 #define DEFAULT_TERMINAL_MAX_HEIGHT 12
 #define DEFAULT_BUTTON_STRLEN 10
 #define DEFAULT_DEC_SPECIAL_CHARACTER_SET 1
