@@ -82,7 +82,7 @@
 #define SERIAL_BUFFER_SIZE DEFAULT_SERIAL_BUFFER_SIZE
 
 // Initial button bindings
-// Strings for btn1 short click, btn 1 long click, btn2 short click, btn2 long click...
+// Strings for btn1 short click, btn1 long click, btn2 short click, btn2 long click...
 #define BUTTON_BINDINGS "\x1b[A", "\x1b[C", "\n", "\x1b", "\x1b[B", "\x1b[D"
 
 /* End build configuration */
