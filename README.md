@@ -2,7 +2,7 @@
 
 TTyGO is a simple VT220 compatible serial terminal with some XTerm
 extensions with optional UTF-8 support. Hardware buttons act as VT220
-programmable function keys, and there is a simple on screen keyboard
+programmable function keys, and there is an on screen keyboard
 available.
 
 It uses the [U8g2lib graphical library](https://github.com/olikraus/u8g2/wiki), so it is compatible with a lot of displays.
