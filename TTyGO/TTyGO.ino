@@ -37,10 +37,13 @@ DISPLAY_CLASS(DISPLAY_CONTROLLER, DISPLAY_NAME, DISPLAY_BUFFER, DISPLAY_COMM) u8
 // ASCII control characters recognised
 const char CR = '\r', LF = '\n', VT = '\v', BS = '\b', FF = '\f', ESC = '\e', NUL = '\0', CSI = '[';
 
-#define TERM(x, y) (terminal_buffer[(x - 1) + (y - 1)*terminal_width])
-
 #define BIT(arr, idx) ((arr[idx / 8] & (1 << (idx % 8))) >> (idx % 8))
 #define BIT_SET(arr, idx, val) (arr[idx / 8] = ((arr[idx / 8] & ~(1 << (idx % 8))) | (val << (idx % 8))))
+
+#define TERM(x, y) (terminal_buffer[(x - 1) + (y - 1)*terminal_width])
+#define TERM_SET(x, y, value) do { TERM(x, y) = value; TERM_DIRTY_SET(x, y, 1); } while(0)
+#define TERM_DIRTY(x, y) BIT(terminal_buffer_dirty, (x - 1) + (y - 1)*terminal_width)
+#define TERM_DIRTY_SET(x, y, val) BIT_SET(terminal_buffer_dirty, (x - 1) + (y - 1)*terminal_width, val)
 
 typedef struct {
   int x;
@@ -90,10 +93,11 @@ extern char current_charset;
 // This is all set by the terminal_setup based on current font and display size
 extern ScrollRegion scroll_region;
 extern Cursor current_cursor, saved_cursor;
-extern unsigned char terminal_tab_stops[TERMINAL_MAX_WIDTH/8];
+extern unsigned char terminal_tab_stops[];
 extern int char_height, char_width,
        terminal_width, terminal_height, display_height_offset, display_width_offset;
-extern Glyph terminal_buffer[TERMINAL_MAX_WIDTH * TERMINAL_MAX_HEIGHT];
+extern Glyph terminal_buffer[];
+extern unsigned char terminal_buffer_dirty[];
 
 extern int newline_eating_mode;
 

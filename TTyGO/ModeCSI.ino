@@ -105,7 +105,7 @@ State control_sequence_entry(char c) {
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
         terminal_scroll_line(current_cursor.y, current_cursor.x, terminal_width, 1);
-        TERM(terminal_width, current_cursor.y) = {' '};
+        TERM_SET(terminal_width, current_cursor.y, {' '});
       }
       return (State) &initial_state;
 
@@ -130,7 +130,7 @@ State control_sequence_entry(char c) {
     case 'X': // CSI Ps X Erase Characters
       param_temp_buffer_digest(1);
       for (int i = 0; i < control_sequence_param[0]; i++) {
-        TERM(current_cursor.x + i, current_cursor.y) = {' '};
+        TERM_SET(current_cursor.x + i, current_cursor.y, {' '});
       }
       return (State) &initial_state;
 
