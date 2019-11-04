@@ -75,8 +75,6 @@ void osk_draw()
       }
 
       osk_offset_keys += (OSK_OFFSET_KEYS_DEFAULT - osk_offset_keys) / OSK_OFFSET_BOUNCE_SPEED;
-      if (abs(osk_offset_keys - OSK_OFFSET_KEYS_DEFAULT) > 0.1)
-        lcd_dirty = true;
       break;
 
     case OSK_CLOSE:
@@ -113,7 +111,6 @@ int osk_check_bounds(int pos)
 // Select a key, if direction is true, it goes forward
 bool osk_move_selection(bool direction)
 {
-  lcd_dirty = true;
   osk_offset_keys = OSK_OFFSET_KEYS_DEFAULT - (direction ? -1 : 1) * OSK_OFFSET_BOUNCE_LENGTH;
   osk_current_selection = osk_check_bounds(osk_current_selection + (direction ? 1 : -1));
 }

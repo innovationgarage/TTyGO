@@ -143,8 +143,6 @@ extern const size_t phys_buttons_nr;
 extern const size_t buttons_nr;
 extern char buttons[][BUTTON_STRLEN];
 
-bool lcd_dirty = true; // invoke a redraw
-
 void serial_print_glyph(Glyph g) {
   Serial.print(g.a);
   #if WIDECHAR > 1

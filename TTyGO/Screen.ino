@@ -89,9 +89,7 @@ class ScreenTask : public Task {
 
       unsigned long redraw_start = millis();
 
-      // Refresh the oled
-      if (lcd_dirty)
-        screen_draw();
+      screen_draw();
 
       // Keep the framerate constant
       delay((1000 / LCD_FPS_TARGET) - (millis() - redraw_start));
