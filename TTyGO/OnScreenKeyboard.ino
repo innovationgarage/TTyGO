@@ -27,7 +27,7 @@ byte osk_current_mode;
 
 void clear_margins() {
   u8g2.setDrawColor(0);
-  u8g2.drawBox(0, osk_position_top ? 0 : (u8g2.getDisplayHeight() - display_height_offset), u8g2.getDisplayWidth(), display_height_offset);
+  u8g2.drawBox(0, osk_position_top ? 0 : (u8g2.getDisplayHeight() - display_height_offset - 1), u8g2.getDisplayWidth(), display_height_offset + 1);
 }
 
 void osk_draw_box()
