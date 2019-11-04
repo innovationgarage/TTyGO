@@ -4,18 +4,16 @@
    Uses U8g2lib graphical library, so it is compatible with a lot of displays https://github.com/olikraus/u8g2/wiki
 */
 
-#define CEIL_DIV(dividend, divisor) (1 + ((dividend - 1) / divisor))
-
 char charsets[4] = {'B','B','B','B'};
 char current_charset = 0;
 Cursor current_cursor, saved_cursor;
-unsigned char terminal_tab_stops[CEIL_DIV(TERMINAL_MAX_WIDTH, 8)];
+unsigned char terminal_tab_stops[TERMINAL_TABS_COUNT];
 
 ScrollRegion scroll_region;
 int char_height, char_width,
     terminal_width, terminal_height, display_height_offset, display_width_offset; // This is all set by the terminal_setup based on current font and display size
-Glyph terminal_buffer[TERMINAL_MAX_WIDTH * TERMINAL_MAX_HEIGHT];
-unsigned char terminal_buffer_dirty[CEIL_DIV(TERMINAL_MAX_WIDTH  * TERMINAL_MAX_HEIGHT, 8)];
+Glyph terminal_buffer[TERMINAL_COUNT];
+unsigned char terminal_buffer_dirty[TERMINAL_DIRTY_COUNT];
 
 void terminal_cursor_move_to_tab(int next) {
   if (next) {

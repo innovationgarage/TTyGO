@@ -25,8 +25,14 @@ double osk_offset_keys; // For the bounce animation
 long osk_next_hold;
 byte osk_current_mode;
 
+void clear_margins() {
+  u8g2.setDrawColor(0);
+  u8g2.drawBox(0, osk_position_top ? 0 : (u8g2.getDisplayHeight() - display_height_offset), u8g2.getDisplayWidth(), display_height_offset);
+}
+
 void osk_draw_box()
 {
+  u8g2.setDrawColor(1);
   osk_position =  osk_animation_frame / 12;
   u8g2.drawBox(0, osk_position_top ? (0) : (9 - osk_position + u8g2.getDisplayHeight() - (char_height + 2)), u8g2.getDisplayWidth(), osk_position);
 }
@@ -82,14 +88,23 @@ void osk_draw()
       osk_current_mode = OSK_CLOSING;
 
     case OSK_CLOSING:
+      clear_margins();
       osk_draw_box();
       if ((osk_animation_frame -= 20) <= 0)
         osk_current_mode = OSK_CLOSED;
+      for (int x = 1; x <= terminal_width; x++) {
+        TERM_DIRTY_SET(x, (osk_position_top ? 1 : terminal_height), 1);
+        TERM_DIRTY_SET(x, (osk_position_top ? 2 : terminal_height - 1), 1);
+      }
       break;
 
     case OSK_CLOSED:
+      clear_margins();
       osk_visible = false;
       attach_buttons();
+      for (int x = 1; x <= terminal_width; x++) {
+        TERM_DIRTY_SET(x, (osk_position_top ? 1 : terminal_height), 1);
+      }
       break;
   }
 }

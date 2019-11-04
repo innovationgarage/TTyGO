@@ -7,17 +7,22 @@ void terminal_setcursor(int col, int row)
 // Draws terminal to the lcd
 void terminal_draw()
 {
-  bool blink_cursor_tick = (millis() % TERMINAL_CURSOR_BLINK_SPEED_LOOP) > TERMINAL_CURSOR_BLINK_SPEED_ON; 
-  for (int x = 1; x <= terminal_width; x++) {
+  TERM_DIRTY_SET(current_cursor.x, current_cursor.y, 1);
+  bool blink_cursor_tick = (millis() % TERMINAL_CURSOR_BLINK_SPEED_LOOP) > TERMINAL_CURSOR_BLINK_SPEED_ON;
+  for (int x = 1; x <= terminal_width; x++)
+  {
     for (int y = 1; y <= terminal_height; y++)
     {
+      if (!TERM_DIRTY(x, y)) continue;
+      
       // Blinking cursor
       bool blink_cursor_inverse = blink_cursor_tick && x == current_cursor.x && y == current_cursor.y;
+
       terminal_setcursor(x, y);
       
       u8g2.setDrawColor(!blink_cursor_inverse);
       char tmp = TERM(x, y).a;
-      u8g2.print(tmp == NUL && blink_cursor_inverse ? ' ' : tmp);
+      u8g2.print(tmp == NUL ? ' ' : tmp);
       
 #if WIDECHAR > 1
       if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b);
@@ -32,6 +37,8 @@ void terminal_draw()
     }
     buffer_serial();
   }
+  memset(terminal_buffer_dirty, 0, sizeof(terminal_buffer_dirty));
+  TERM_DIRTY_SET(current_cursor.x, current_cursor.y, 1);
 }
 
 // Draws the screen
@@ -43,8 +50,6 @@ void screen_draw()
   #define DISPLAY_BUFFER_2 2
   #define DISPLAY_BUFFER_F 3
   #if EVAL(DISPLAY_BUFFER_, DISPLAY_BUFFER) == 3
-    u8g2.clearBuffer();
-
     terminal_draw();
     #ifdef ON_SCREEN_KEYBOARD
       if (osk_visible) osk_draw();
