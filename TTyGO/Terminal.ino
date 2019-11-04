@@ -7,12 +7,13 @@
 char charsets[4] = {'B','B','B','B'};
 char current_charset = 0;
 Cursor current_cursor, saved_cursor;
-unsigned char terminal_tab_stops[TERMINAL_MAX_WIDTH/8];
+unsigned char terminal_tab_stops[TERMINAL_TABS_COUNT];
 
 ScrollRegion scroll_region;
 int char_height, char_width,
     terminal_width, terminal_height, display_height_offset, display_width_offset; // This is all set by the terminal_setup based on current font and display size
-Glyph terminal_buffer[TERMINAL_MAX_WIDTH * TERMINAL_MAX_HEIGHT];
+Glyph terminal_buffer[TERMINAL_COUNT];
+unsigned char terminal_buffer_dirty[TERMINAL_DIRTY_COUNT];
 
 void terminal_cursor_move_to_tab(int next) {
   if (next) {
@@ -33,13 +34,13 @@ void terminal_scroll(int start, int end, int up) {
   if (up == 1) {
     for (int y = top; y <= bottom; y++) {
       for (int x = 1; x <= terminal_width; x++) {
-        TERM(x, y) = TERM(x, y + 1);
+        TERM_SET(x, y, TERM(x, y + 1));
       }
     }
   } else {
     for (int y = bottom; y >= top; y--) {
       for (int x = 1; x <= terminal_width; x++) {
-        TERM(x, y) = TERM(x, y - 1);
+        TERM_SET(x, y, TERM(x, y - 1));
       }
     }
   }
@@ -51,11 +52,11 @@ void terminal_scroll_line(int y, int start, int end, int direction_left) {
 
   if (direction_left == 1) {
     for (int x = left; x <= right; x++) {
-      TERM(x, y) = TERM(x + 1, y);
+      TERM_SET(x, y, TERM(x + 1, y));
     }
   } else {
     for (int x = right; x >= left; x--) {
-      TERM(x, y) = TERM(x - 1, y);
+      TERM_SET(x, y, TERM(x - 1, y));
     }
   }
 }
@@ -65,17 +66,17 @@ void terminal_clear_line(int x, int y, int mode) {
   {
     case 0:
       for (int i = x; i <= terminal_width; i++) {
-        TERM(i, y) = {' '};
+        TERM_SET(i, y, {' '});
       }
       break;
     case 1:
       for (int i = 1; i <= x; i++) {
-        TERM(i, y) = {' '};
+        TERM_SET(i, y, {' '});
       }
       break;
     case 2:
       for (int i = 1; i <= terminal_width; i++) {
-        TERM(i, y) = {' '};
+        TERM_SET(i, y, {' '});
       }
       break;
   }
@@ -142,7 +143,7 @@ void terminal_backspace()
   if (current_cursor.x > 1) {
     current_cursor.x -= 1;
   }
-  TERM(current_cursor.x, current_cursor.y) = {' '};
+  TERM_SET(current_cursor.x, current_cursor.y, {' '});
   handle_scroll();
 }
 
@@ -155,7 +156,7 @@ void terminal_newline()
 }
 
 void terminal_put_glyph(Glyph g) {
-  TERM(current_cursor.x, current_cursor.y) = g;
+  TERM_SET(current_cursor.x, current_cursor.y, g);
   ++current_cursor.x;
   handle_scroll();
 }
