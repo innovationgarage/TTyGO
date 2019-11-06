@@ -93,24 +93,27 @@ void terminal_cursor_restore() {
 // Clears the char buffer
 void terminal_clear(int mode)
 {
-  int cursor_position = (current_cursor.x - 1) + ((current_cursor.y - 1) * terminal_width);
-  bool should_clear_next = true;
+  int start = 1;
+  int end = terminal_height;
 
-  for (int i = 0; i < terminal_width * terminal_height; i++)
+  switch (mode)
   {
-    switch (mode)
+    case 0:
+      start = current_cursor.y;
+      break;
+    case 1:
+      end = current_cursor.y;
+      break;
+    default:
+      break;
+  }
+
+  for (int y = start; y <= end; y++)
+  {
+    for (int x = 1; x <= terminal_width; x++)
     {
-      case 0: // From cursor to the end
-        should_clear_next = i >= cursor_position;
-        break;
-
-      case 1: // From cursor to beginning
-        should_clear_next = i < cursor_position;
-        break;
+      TERM_SET(x, y, {NUL});
     }
-
-    if (should_clear_next)
-      terminal_buffer[i] = {NUL};
   }
 
   if (mode >= 2) // Reposition cursor to the top left
@@ -118,8 +121,6 @@ void terminal_clear(int mode)
     current_cursor.x = 1;
     current_cursor.y = 1;
   }
-
-  terminal_draw();
 }
 
 void handle_scroll() {
