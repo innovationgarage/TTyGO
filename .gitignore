@@ -4,4 +4,4 @@
 *.bin
 *.elf
 *.pyc
-*.ino.with_bootloader.leonardo.hex
+*.hex
