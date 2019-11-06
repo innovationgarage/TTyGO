@@ -11,8 +11,8 @@ It uses the [U8g2lib graphical library](https://github.com/olikraus/u8g2/wiki), 
 * [Usage](docs/Usage.md)
 * [Resources](docs/Resources.md)
 
-[<img src="https://i.ytimg.com/vi/VxAwc2s-E1o/hqdefault.jpg" width="434">](http://www.youtube.com/watch?v=VxAwc2s-E1o)
-[<img src="https://i.ytimg.com/vi/eWtr9A67FpA/hqdefault.jpg" width="434">](https://youtu.be/eWtr9A67FpA)
+[<img src="https://i.ytimg.com/vi/VxAwc2s-E1o/hqdefault.jpg" width="433">](http://www.youtube.com/watch?v=VxAwc2s-E1o)
+[<img src="https://i.ytimg.com/vi/eWtr9A67FpA/hqdefault.jpg" width="433">](https://youtu.be/eWtr9A67FpA)
 
 ![Screenshot](images/screenshot-menu.jpg)
 
