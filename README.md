@@ -9,6 +9,7 @@ It uses the [U8g2lib graphical library](https://github.com/olikraus/u8g2/wiki), 
 
 * [Building](docs/Building.md)
 * [Usage](docs/Usage.md)
+* [Resources](docs/Resources.md)
 
 [![Screenshot](images/screenshot-menu.jpg)](http://www.youtube.com/watch?v=VxAwc2s-E1o)
 
