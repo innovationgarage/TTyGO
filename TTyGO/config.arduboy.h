@@ -9,8 +9,18 @@
 // OneButton() constructor.
 // Each of these defines two programmable function keys: One for short
 // click, one for long click.
-// Up, A, Down, Left, Right, B
-#define BUTTONS BUTTON(A0, true) BUTTON(7, true) BUTTON(A3, true) BUTTON(A2, true) BUTTON(A1, true) BUTTON(8, true)
+
+/* Arduboy pins:
+ * Up    A0
+ * A     7
+ * Down  A3
+ * Left  A2
+ * Right A1
+ * B     8
+ *  */
+ 
+//#define BUTTONS BUTTON(A0, true) BUTTON(7, true) BUTTON(A3, true) BUTTON(A2, true) BUTTON(A1, true) BUTTON(8, true) // Up, A, Down, Left, Right, B
+#define BUTTONS BUTTON(A2, true) BUTTON(7, true) BUTTON(A1, true) BUTTON(A0, true) BUTTON(A3, true) BUTTON(8, true) // Left, A, Right, Up, Down, B
 
 #define BTN_DEBOUNCE_SPEED 40 // Debouncer: default 50 ms
 #define BTN_CLICK_SPEED 300 // Click: default 600 ms
