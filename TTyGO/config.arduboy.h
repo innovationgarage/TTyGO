@@ -38,7 +38,7 @@
 #define LCD_CLK 5
 #define LCD_SDA 4
 
-#define LCD_FPS_TARGET 60
+#define LCD_FPS_TARGET 30
 
 #define DEFAULT_SERIAL_BAUDS 9600
 

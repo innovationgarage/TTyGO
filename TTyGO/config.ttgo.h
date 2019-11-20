@@ -26,7 +26,7 @@
 
 #define LCD_CLK 5
 #define LCD_SDA 4
-#define LCD_FPS_TARGET 60
+#define LCD_FPS_TARGET 30
 
 // Use https://github.com/nrwiersma/ESP8266Scheduler for task scheduling
 // Note: Only available on the ESP platform
@@ -36,7 +36,7 @@
 // ESP uses software I2C that needs configuring at startup
 #define ESPI2C
 
-#define DEFAULT_SERIAL_BAUDS 115200
+#define DEFAULT_SERIAL_BAUDS 19200
 
 // ************************************************
 // **** Software feature configuration  ***********
