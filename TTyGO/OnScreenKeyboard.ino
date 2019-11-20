@@ -107,6 +107,29 @@ void osk_draw()
       }
       break;
   }
+
+  // Memory available
+  u8g2.drawBox(5,2,90,50);
+  String f = "** FREE:";
+  f += ESP.getFreeHeap();
+  f += "   ";
+  u8g2.drawStr(10, 10, f.c_str());
+  f = "** FRAG%:";
+  f += ESP.getHeapFragmentation();
+  u8g2.drawStr(10, 20, f.c_str());
+
+  f = "** CPU:";
+  f += ESP.getCpuFreqMHz();
+  u8g2.drawStr(10, 30, f.c_str());
+
+  f = "** CYCLE:";
+  f += ESP.getCycleCount();
+  u8g2.drawStr(10, 40, f.c_str());
+
+
+  f = "** VCC:";
+  f += ESP.getVcc();
+  u8g2.drawStr(10, 50, f.c_str());
 }
 
 // Returns corrected item if it was out of bounds

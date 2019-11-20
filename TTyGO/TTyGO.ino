@@ -1,5 +1,5 @@
-#define VERSION "0.0.2"
-
+#define VERSION "0.0.2debug"
+ADC_MODE(ADC_VCC);
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
@@ -11,19 +11,19 @@
 #define CEIL_DIV(dividend, divisor) (1 + ((dividend - 1) / divisor))
 
 #ifdef USE_ESP8266SCHEDULER
-  #include <Scheduler.h> // ESP8266Scheduler
+#include <Scheduler.h> // ESP8266Scheduler
 #else
-  #include "scheduler.h"
+#include "scheduler.h"
 #endif
 
 #ifdef FLASH_STRINGS
-  #define S(s) F(s)
-  #define S_len(s) strlen_P(s)
-  #define S_get(s, i) pgm_read_byte(s + i)
+#define S(s) F(s)
+#define S_len(s) strlen_P(s)
+#define S_get(s, i) pgm_read_byte(s + i)
 #else
-  #define S(s) s
-  #define S_len(s) strlen(s)
-  #define S_get(s, i) (s[i])
+#define S(s) s
+#define S_len(s) strlen(s)
+#define S_get(s, i) (s[i])
 #endif
 
 #define VARIABLE 3
@@ -33,7 +33,7 @@
 
 
 #define DISPLAY_CLASS2(DISPLAY_CONTROLLER, DISPLAY_NAME, DISPLAY_BUFFER, DISPLAY_COMM) U8G2_ ## DISPLAY_CONTROLLER ## _ ## DISPLAY_NAME ## _ ## DISPLAY_BUFFER ## _ ## DISPLAY_COMM
-#define DISPLAY_CLASS(DISPLAY_CONTROLLER, DISPLAY_NAME, DISPLAY_BUFFER, DISPLAY_COMM) DISPLAY_CLASS2(DISPLAY_CONTROLLER, DISPLAY_NAME, DISPLAY_BUFFER, DISPLAY_COMM) 
+#define DISPLAY_CLASS(DISPLAY_CONTROLLER, DISPLAY_NAME, DISPLAY_BUFFER, DISPLAY_COMM) DISPLAY_CLASS2(DISPLAY_CONTROLLER, DISPLAY_NAME, DISPLAY_BUFFER, DISPLAY_COMM)
 DISPLAY_CLASS(DISPLAY_CONTROLLER, DISPLAY_NAME, DISPLAY_BUFFER, DISPLAY_COMM) u8g2(DISPLAY_ARGS);
 
 // ASCII control characters recognised
@@ -63,18 +63,18 @@ typedef struct {
 
 typedef struct {
   char a;
-  #if WIDECHAR > 1
+#if WIDECHAR > 1
   char b;
-  #if WIDECHAR > 2
+#if WIDECHAR > 2
   char c;
-  #if WIDECHAR > 3
+#if WIDECHAR > 3
   char d;
-  #endif
-  #endif
-  #endif
+#endif
+#endif
+#endif
 } Glyph;
 
-void terminal_cursor_move_to_tab(int next=1);
+void terminal_cursor_move_to_tab(int next = 1);
 
 void terminal_scroll(int start, int end, int up);
 void terminal_scroll_line(int y, int start, int end, int direction_left = 0);
@@ -151,15 +151,15 @@ extern char buttons[][BUTTON_STRLEN];
 
 void serial_print_glyph(Glyph g) {
   Serial.print(g.a);
-  #if WIDECHAR > 1
+#if WIDECHAR > 1
   if (g.b != NUL) Serial.print(g.b);
-  #if WIDECHAR > 2
+#if WIDECHAR > 2
   if (g.c != NUL) Serial.print(g.c);
-  #if WIDECHAR > 3
+#if WIDECHAR > 3
   if (g.d != NUL) Serial.print(g.d);
-  #endif
-  #endif
-  #endif
+#endif
+#endif
+#endif
 }
 
 void buffer_serial();

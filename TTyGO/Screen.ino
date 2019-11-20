@@ -14,16 +14,16 @@ void terminal_draw()
     for (int y = 1; y <= terminal_height; y++)
     {
       if (!TERM_DIRTY(x, y)) continue;
-      
+
       // Blinking cursor
       bool blink_cursor_inverse = blink_cursor_tick && x == current_cursor.x && y == current_cursor.y;
 
       terminal_setcursor(x, y);
-      
+
       u8g2.setDrawColor(!blink_cursor_inverse);
       char tmp = TERM(x, y).a;
       u8g2.print(tmp == NUL ? ' ' : tmp);
-      
+
 #if WIDECHAR > 1
       if (TERM(x, y).b != NUL) u8g2.print(TERM(x, y).b);
 #if WIDECHAR > 2
@@ -44,31 +44,33 @@ void terminal_draw()
 // Draws the screen
 void screen_draw()
 {
-  #define APPEND(a, b) a ## b
-  #define EVAL(a, b) APPEND(a, b)
-  #define DISPLAY_BUFFER_1 1
-  #define DISPLAY_BUFFER_2 2
-  #define DISPLAY_BUFFER_F 3
-  #if EVAL(DISPLAY_BUFFER_, DISPLAY_BUFFER) == 3
-    terminal_draw();
-    #ifdef ON_SCREEN_KEYBOARD
-      if (osk_visible) osk_draw();
-    #endif
+#define APPEND(a, b) a ## b
+#define EVAL(a, b) APPEND(a, b)
+#define DISPLAY_BUFFER_1 1
+#define DISPLAY_BUFFER_2 2
+#define DISPLAY_BUFFER_F 3
+#if EVAL(DISPLAY_BUFFER_, DISPLAY_BUFFER) == 3
+  terminal_draw();
+#ifdef ON_SCREEN_KEYBOARD
+  if (osk_visible) osk_draw();
+#endif
 
-    for (uint8_t y = 0; y < u8g2.getBufferTileHeight(); y++) {
-      u8g2.updateDisplayArea(0, y, u8g2.getBufferTileWidth(), 1);
-      buffer_serial();
-    }
-  #else
-    u8g2.firstPage();
-    do {
-      terminal_draw();
-      #ifdef ON_SCREEN_KEYBOARD
-        if (osk_visible) osk_draw();
-      #endif
-      buffer_serial();
-    } while (u8g2.nextPage());
-  #endif
+  for (uint8_t y = 0; y < u8g2.getBufferTileHeight(); y++) {
+    u8g2.updateDisplayArea(0, y, u8g2.getBufferTileWidth(), 1);
+    
+    buffer_serial();
+  }
+#else
+  u8g2.firstPage();
+  do {
+    terminal_draw();
+#ifdef ON_SCREEN_KEYBOARD
+    if (osk_visible) osk_draw();
+#endif
+
+    buffer_serial();
+  } while (u8g2.nextPage());
+#endif
 }
 
 class ScreenTask : public Task {
