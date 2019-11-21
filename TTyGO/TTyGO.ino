@@ -3,6 +3,7 @@
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
+#include <ESP8266WiFi.h>
 #include "config.h"
 #include <U8g2lib.h>
 #include <Wire.h>
