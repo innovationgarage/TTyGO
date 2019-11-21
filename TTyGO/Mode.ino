@@ -11,7 +11,7 @@ State initial_state(char c) {
       current_cursor.x = 1;
       return (State) &initial_state;
     case '\x5': // ENQ (enquiry)
-      Serial.print(S("TTyGO v.0.0.1"));
+      Serial.print(S("TTyGO v" VERSION));
       return (State) &initial_state;
     case '\x9': // TAB (horizontal tab)
       terminal_cursor_move_to_tab(1);

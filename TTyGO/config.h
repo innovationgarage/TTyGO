@@ -64,7 +64,7 @@
 
 #define str(s) str2(s)
 #define str2(s) #s
-#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION " " str(SERIAL_BAUDS) "bps\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
+#define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v" VERSION " " str(SERIAL_BAUDS) "bps\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
 
 #define TURN_OFF_WIFI_STARTUP DEFAULT_TURN_OFF_WIFI_STARTUP
 
