@@ -66,6 +66,8 @@
 #define str2(s) #s
 #define TERMINAL_INIT_BANNER "\x1bc\x1b[1;1HTTyGO v." VERSION " " str(SERIAL_BAUDS) "bps\nVT220" WIDECHARSTR " for Arduino\nBy InnovationGarage AS\n" BANNER
 
+#define TURN_OFF_WIFI_STARTUP DEFAULT_TURN_OFF_WIFI_STARTUP
+
 // Set to 1 to enable the DEC special character set (drawing characters)
 // Note that you must use a font that supports this too for this to work.
 #define DEC_SPECIAL_CHARACTER_SET DEFAULT_DEC_SPECIAL_CHARACTER_SET

@@ -33,6 +33,9 @@
 // Comment the line below to use the "fake" scheduler
 #define USE_ESP8266SCHEDULER
 
+// Turns off wifi at ESP start
+#define DEFAULT_TURN_OFF_WIFI_STARTUP 1
+
 // ESP uses software I2C that needs configuring at startup
 #define ESPI2C
 
